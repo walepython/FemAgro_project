@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -592,37 +593,35 @@ def donation_page(request):
 
 # ── Verify view (optional manual check) ───────────
 def verify_payment(request):
-    reference = request.GET.get('reference', '')
+    reference = request.GET.get('reference', '').strip()
 
     if not reference:
         return redirect('donation_failed')
 
-    try:
-        response = requests.get(
-            f'https://api.paystack.co/transaction/verify/{reference}',
-            headers = {
-                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}'
-            },
-            timeout=15,
+    donation = Donation.objects.filter(
+        reference=reference
+    ).first()
+
+    if not donation:
+        logger.warning(
+            f'Verify: donation not found ref={reference}'
         )
-        result = response.json()
+        return redirect('donation_failed')
 
-        if (result.get('status') and
-                result['data']['status'] == 'success'):
+    if not verify_paystack_transaction(reference, donation):
+        logger.warning(
+            f'Verify: transaction validation failed ref={reference}'
+        )
+        return render(request, 'donation_failed.html')
 
-            donation = Donation.objects.get(reference=reference)
-            donation.status = 'paid'
-            donation.save()
+    donation, newly_paid = _mark_donation_paid(donation)
 
-            return render(request, 'donation_success.html', {
-                'donation': donation
-            })
+    if newly_paid:
+        _notify_donation_paid(donation)
 
-    except Exception as e:
-        logger.error(f'Verify error: {e}')
-
-    return render(request, 'donation_failed.html')
-
+    return render(request, 'donation_success.html', {
+        'donation': donation
+    })
 
 
 # ── Webhook (Paystack server-to-server backup) ─────
@@ -631,17 +630,15 @@ def verify_payment(request):
 @require_POST
 def paystack_webhook(request):
 
-    # Verify Paystack signature
     paystack_signature = request.headers.get(
         'X-Paystack-Signature', ''
     )
 
     secret = settings.PAYSTACK_SECRET_KEY.encode('utf-8')
-    body = request.body
 
     expected_sig = hmac.new(
         secret,
-        body,
+        request.body,
         hashlib.sha512
     ).hexdigest()
 
@@ -653,91 +650,84 @@ def paystack_webhook(request):
         return HttpResponse(status=400)
 
     try:
-        payload = json.loads(body)
+        payload = json.loads(request.body)
+
         event = payload.get('event')
-        reference = payload.get('data', {}).get('reference')
+        transaction_data = payload.get('data', {})
+        reference = transaction_data.get('reference')
 
-        if event == 'charge.success' and reference:
+        if event != 'charge.success' or not reference:
+            return HttpResponse(status=200)
 
-            donation = Donation.objects.filter(
-                reference=reference
-            ).first()
+        donation = Donation.objects.filter(
+            reference=reference
+        ).first()
 
-            if donation:
-                transaction = payload.get('data', {})
+        if not donation:
+            logger.warning(
+                f'Webhook: unknown donation ref={reference}'
+            )
+            return HttpResponse(status=200)
 
-                expected_amount = int(donation.amount * 100)
+        expected_amount = int(donation.amount * 100)
 
-                valid_payment = (
-                    transaction.get('status') == 'success'
-                    and transaction.get('reference') == donation.reference
-                    and transaction.get('amount') == expected_amount
-                    and transaction.get('currency') == 'NGN'
-                )
+        valid_payment = (
+            transaction_data.get('status') == 'success'
+            and transaction_data.get('reference') == donation.reference
+            and transaction_data.get('amount') == expected_amount
+            and transaction_data.get('currency') == 'NGN'
+        )
 
-                if valid_payment and donation.status != 'paid':
-                    donation.status = 'paid'
-                    donation.save(update_fields=['status'])
+        if not valid_payment:
+            logger.warning(
+                f'Webhook: invalid payment details ref={reference}'
+            )
+            return HttpResponse(status=200)
 
-                    send_donation_confirmation(donation)
-                    send_admin_notification(donation)
+        donation, newly_paid = _mark_donation_paid(donation)
 
-                    logger.info(
-                        f'Webhook: donation {reference} marked paid'
-                    )
+        if newly_paid:
+            _notify_donation_paid(donation)
 
-    except Exception as e:
-        logger.error(f'Webhook error: {e}')
+            logger.info(
+                f'Webhook: donation {reference} marked paid'
+            )
+
+    except Exception:
+        logger.exception('Webhook processing error')
 
     return HttpResponse(status=200)
 
 
-
 # ── Paystack callback (user returns after payment) ─
 def paystack_callback(request):
-    reference = request.GET.get('reference', '')
+    reference = request.GET.get('reference', '').strip()
 
     if not reference:
         return redirect('donation_failed')
 
-    # Verify with Paystack
-    try:
-        response = requests.get(
-            f'https://api.paystack.co/transaction/verify/{reference}',
-            headers = {
-                'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}'
-            },
-            timeout = 15,
+    donation = Donation.objects.filter(
+        reference=reference
+    ).first()
+
+    if not donation:
+        logger.warning(
+            f'Callback: donation not found ref={reference}'
         )
-        data = response.json()
+        return redirect('donation_failed')
 
-        if (data.get('status') and
-                data['data']['status'] == 'success'):
+    if not verify_paystack_transaction(reference, donation):
+        logger.warning(
+            f'Callback: transaction validation failed ref={reference}'
+        )
+        return redirect('donation_failed')
 
-            try:
-                donation = Donation.objects.get(reference=reference)
+    donation, newly_paid = _mark_donation_paid(donation)
 
-                if donation.status != 'paid':
-                    donation.status = 'paid'
-                    donation.save()
+    if newly_paid:
+        _notify_donation_paid(donation)
 
-                    # Send emails
-                    send_donation_confirmation(donation)
-                    send_admin_notification(donation)
-
-                return redirect('donation_success')
-
-            except Donation.DoesNotExist:
-                logger.error(
-                    f'Callback: donation not found ref={reference}'
-                )
-                return redirect('donation_failed')
-
-    except Exception as e:
-        logger.error(f'Callback verification error: {e}')
-
-    return redirect('donation_failed')
-
+    return redirect('donation_success')
 
 
 def donation_success(request):
@@ -762,6 +752,10 @@ from decimal import Decimal
 import requests
 
 def verify_paystack_transaction(reference, donation):
+
+    if reference != donation.reference:
+        return False
+
     try:
         response = requests.get(
             f'https://api.paystack.co/transaction/verify/{reference}',
@@ -777,19 +771,51 @@ def verify_paystack_transaction(reference, donation):
         if not result.get('status'):
             return False
 
-        transaction = result.get('data', {})
+        transaction_data = result.get('data') or {}
 
         expected_amount = int(donation.amount * 100)
 
         return (
-            transaction.get('status') == 'success'
-            and transaction.get('reference') == donation.reference
-            and transaction.get('amount') == expected_amount
-            and transaction.get('currency') == 'NGN'
+            transaction_data.get('status') == 'success'
+            and transaction_data.get('reference') == donation.reference
+            and transaction_data.get('amount') == expected_amount
+            and transaction_data.get('currency') == 'NGN'
         )
 
-    except requests.RequestException as error:
+    except (requests.RequestException, ValueError) as error:
         logger.error(
             f'Paystack verification error: {error}'
         )
         return False
+    
+def _mark_donation_paid(donation):
+
+    with transaction.atomic():
+        locked_donation = Donation.objects.select_for_update().get(
+            pk=donation.pk
+        )
+
+        if locked_donation.status == 'paid':
+            return locked_donation, False
+
+        locked_donation.status = 'paid'
+        locked_donation.save(update_fields=['status'])
+
+    return locked_donation, True
+
+
+def _notify_donation_paid(donation):
+
+    try:
+        send_donation_confirmation(donation)
+    except Exception:
+        logger.exception(
+            f'Could not send donor confirmation: {donation.reference}'
+        )
+
+    try:
+        send_admin_notification(donation)
+    except Exception:
+        logger.exception(
+            f'Could not send admin notification: {donation.reference}'
+        )
