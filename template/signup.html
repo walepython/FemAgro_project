@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}Sign Up - Agrivista Farms{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<style>
+
+.container{
+    width: 60%;
+}
+
+.auth-section{
+    background:#edf5ef;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+}
+
+.auth-card{
+    width:100%;
+    background:#fff;
+    border-radius:28px;
+    padding:42px;
+    box-shadow:0 10px 40px rgba(0,0,0,0.06);
+    border:1px solid #dcebdd;
+}
+
+.brand-accent{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:28px;
+}
+
+.brand-dot{
+    width:56px;
+    height:56px;
+    background:#157a5b;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:22px;
+}
+
+.brand-name{
+    font-size:1.8rem;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.auth-card h2{
+    font-size:2rem;
+    font-weight:800;
+    color:#0f172a;
+    margin-bottom:10px;
+    line-height:1.1;
+}
+
+.subtitle{
+    color:#6b7280;
+    font-size:1.05rem;
+    margin-bottom:35px;
+}
+
+.form-label{
+    display:block;
+    font-size:0.95rem;
+    font-weight:600;
+    color:#1e293b;
+    margin-bottom:10px;
+}
+
+.form-control,
+.auth-card input{
+    width:100%;
+    height:58px;
+    border:2px solid #d8e8dc;
+    border-radius:14px;
+    padding:0 18px;
+    font-size:1rem;
+    outline:none;
+    transition:0.3s;
+    background:#fff;
+}
+
+.form-control:focus,
+.auth-card input:focus{
+    border-color:#157a5b;
+    box-shadow:0 0 0 4px rgba(21,122,91,0.1);
+}
+
+.row{
+    display:flex;
+    flex-wrap:wrap;
+    margin-left:-10px;
+    margin-right:-10px;
+}
+
+.col-md-6,
+.col-12{
+    padding:0 10px;
+    margin-bottom:22px;
+}
+
+.col-md-6{
+    width:50%;
+}
+
+.col-12{
+    width:100%;
+}
+
+.btn-primary-custom{
+    width:100%;
+    height:60px;
+    background:#157a5b;
+    color:#fff;
+    border:none;
+    border-radius:16px;
+    font-size:1.1rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.3s;
+    margin-top:10px;
+}
+
+.btn-primary-custom:hover{
+    background:#12664c;
+    transform:translateY(-2px);
+}
+
+.auth-link{
+    color:#157a5b;
+    font-weight:700;
+    text-decoration:none;
+}
+
+.auth-link:hover{
+    text-decoration:underline;
+}
+
+.errorlist{
+    list-style:none;
+    padding:0;
+    margin-top:8px;
+}
+
+.errorlist li{
+    color:#dc2626;
+    font-size:0.85rem;
+}
+
+.alert-danger{
+    background:#fee2e2;
+    color:#991b1b;
+    padding:12px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+@media(max-width:768px){
+
+    .auth-card{
+        padding:28px;
+        border-radius:22px;
+    }
+
+    .auth-card h2{
+        font-size:2.2rem;
+    }
+
+    .col-md-6{
+        width:100%;
+    }
+
+    .brand-name{
+        font-size:1.4rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="brand-accent">
+                <div class="brand-dot"><i class="fas fa-leaf"></i></div>
+                <div class="brand-name">Agrivista Farms</div>
+            </div>
+
+            <h2>Create Account</h2>
+            <p class="subtitle">Join thousands of farmers using Agrivista.</p>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">First Name *</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}<ul class="errorlist">{% for e in form.first_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Last Name *</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}<ul class="errorlist">{% for e in form.last_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Username *</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}<ul class="errorlist">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Email Address *</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}<ul class="errorlist">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Password *</label>
+                        {{ form.password1 }}
+                        {% if form.password1.errors %}<ul class="errorlist">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Confirm Password *</label>
+                        {{ form.password2 }}
+                        {% if form.password2.errors %}<ul class="errorlist">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+                </div>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 mt-3">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <button type="submit" class="btn-primary-custom w-100 mt-4" style="text-align:center; border:none;">
+                    <i class="fas fa-user-plus me-2"></i>Create My Account
+                </button>
+            </form>
+
+            <div class="text-center mt-4" style="font-size:0.9rem; color:var(--text-muted);">
+                Already have an account? <a href="{% url 'login' %}" class="auth-link">Login here</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

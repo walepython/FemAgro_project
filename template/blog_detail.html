@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+
+<style>
+    :root{
+        --bg:#eef5f0;
+        --white:#fff;
+        --primary:#1f7a53;
+        --primary-dark:#155d3d;
+        --text:#1d2939;
+        --muted:#667085;
+        --border:#dfe7e2;
+        --shadow:0 10px 30px rgba(0,0,0,.08);
+        --radius:22px;
+    }
+
+    body{
+        background:var(--bg);
+        font-family:'DM Sans',sans-serif;
+    }
+
+    /* =========================
+       HERO IMAGE
+    ========================= */
+    .blog-hero{
+        width:100%;
+        height:320px;
+        overflow:hidden;
+        position:relative;
+    }
+
+    .blog-hero img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
+
+    /* =========================
+       MAIN WRAPPER
+    ========================= */
+    .blog-wrapper{
+        max-width:1200px;
+        margin:-120px auto 80px;
+        padding:0 20px;
+        position:relative;
+        z-index:10;
+    }
+
+    /* =========================
+       BLOG CARD
+    ========================= */
+    .blog-card{
+        max-width:760px;
+        margin:0 auto;
+        background:var(--white);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        overflow:hidden;
+        border:1px solid rgba(0,0,0,.05);
+    }
+
+    .blog-content{
+        padding:34px;
+    }
+
+    .back-link{
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        text-decoration:none;
+        color:var(--primary);
+        font-size:14px;
+        font-weight:600;
+        margin-bottom:18px;
+    }
+
+    .blog-tag{
+        display:inline-flex;
+        align-items:center;
+        background:#e7f6ec;
+        color:var(--primary);
+        padding:6px 12px;
+        border-radius:30px;
+        font-size:12px;
+        font-weight:700;
+        margin-bottom:16px;
+    }
+
+    .blog-title{
+        font-size:2.3rem;
+        line-height:1.1;
+        color:var(--text);
+        margin-bottom:18px;
+        font-weight:800;
+    }
+
+    .blog-meta{
+        display:flex;
+        flex-wrap:wrap;
+        gap:20px;
+        padding-bottom:20px;
+        border-bottom:1px solid var(--border);
+        margin-bottom:24px;
+    }
+
+    .meta-item{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        color:var(--muted);
+        font-size:14px;
+    }
+
+    /* =========================
+       ARTICLE CONTENT
+    ========================= */
+    .blog-body{
+        color:#344054;
+        line-height:1.9;
+        font-size:16px;
+    }
+
+    .blog-body h2{
+        margin-top:28px;
+        margin-bottom:10px;
+        color:var(--text);
+        font-size:1.45rem;
+    }
+
+    .blog-body h3{
+        margin-top:22px;
+        margin-bottom:8px;
+        color:var(--text);
+        font-size:1.1rem;
+    }
+
+    .blog-body p{
+        margin-bottom:18px;
+    }
+
+    .blog-body ul{
+        padding-left:20px;
+        margin-bottom:20px;
+    }
+
+    .blog-body li{
+        margin-bottom:10px;
+    }
+
+    .blog-share{
+        margin-top:40px;
+        padding-top:24px;
+        border-top:1px solid var(--border);
+        text-align:center;
+        color:var(--muted);
+        font-size:14px;
+    }
+
+    /* =========================
+       RELATED POSTS
+    ========================= */
+    .related-section{
+        max-width:1100px;
+        margin:60px auto 0;
+    }
+
+    .related-title{
+        font-size:1.6rem;
+        font-weight:800;
+        color:var(--text);
+        margin-bottom:24px;
+    }
+
+    .related-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:24px;
+    }
+
+    .related-card{
+        background:#fff;
+        border-radius:18px;
+        overflow:hidden;
+        box-shadow:0 4px 18px rgba(0,0,0,.06);
+        transition:.3s;
+        border:1px solid rgba(0,0,0,.04);
+    }
+
+    .related-card:hover{
+        transform:translateY(-5px);
+    }
+
+    .related-card img{
+        width:100%;
+        height:190px;
+        object-fit:cover;
+        display:block;
+    }
+
+    .related-body{
+        padding:18px;
+    }
+
+    .related-body h3{
+        font-size:1.1rem;
+        line-height:1.4;
+        margin-bottom:10px;
+        color:var(--text);
+    }
+
+    .related-body p{
+        font-size:14px;
+        line-height:1.7;
+        color:var(--muted);
+        margin-bottom:14px;
+    }
+
+    .related-link{
+        text-decoration:none;
+        color:var(--primary);
+        font-weight:700;
+        font-size:14px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+    @media(max-width:900px){
+
+        .blog-wrapper{
+            margin-top:-80px;
+        }
+
+        .blog-title{
+            font-size:1.8rem;
+        }
+
+        .related-grid{
+            grid-template-columns:1fr;
+        }
+
+        .blog-content{
+            padding:24px;
+        }
+    }
+
+    @media(max-width:600px){
+
+        .blog-hero{
+            height:250px;
+        }
+
+        .blog-title{
+            font-size:1.5rem;
+        }
+
+        .blog-meta{
+            gap:12px;
+        }
+    }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO IMAGE -->
+<div class="blog-hero">
+    {% if post.image_url %}
+        <img src="{{ post.image_url }}" alt="{{ post.title }}">
+    {% else %}
+        <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1200&q=80"
+             alt="{{ post.title }}">
+    {% endif %}
+</div>
+
+<!-- BLOG CONTENT -->
+<div class="blog-wrapper">
+
+    <div class="blog-card">
+
+        <div class="blog-content">
+
+            <a href="{% url 'blog' %}" class="back-link">
+                ← Back to Blog
+            </a>
+
+            <div class="blog-tag">
+                Agriculture Article
+            </div>
+
+            <h1 class="blog-title">
+                {{ post.title }}
+            </h1>
+
+            <div class="blog-meta">
+
+                <div class="meta-item">
+                    👨‍🌾 FemAgro Team
+                </div>
+
+                <div class="meta-item">
+                    📅 {{ post.created_at|date:"F d, Y" }}
+                </div>
+
+                <div class="meta-item">
+                    ⏱ 6 min read
+                </div>
+
+            </div>
+
+            <div class="blog-body">
+
+                <p>
+                    {{ post.content|safe }}
+                </p>
+
+
+            </div>
+
+            <div class="blog-share">
+                 Found this article helpful? Share it with other farmers and learners.
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RELATED POSTS -->
+    {% if related_posts %}
+    <div class="related-section">
+
+        <h2 class="related-title">
+            More Articles
+        </h2>
+
+        <div class="related-grid">
+
+            {% for item in related_posts %}
+            <div class="related-card">
+
+                {% if item.image_url %}
+                    <img src="{{ item.image_url }}" alt="{{ item.title }}">
+                {% else %}
+                    <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&q=80"
+                         alt="{{ item.title }}">
+                {% endif %}
+
+                <div class="related-body">
+
+                    <h3>{{ item.title }}</h3>
+
+                    <p>
+                        {{ item.excerpt|truncatewords:18 }}
+                    </p>
+
+                    <a href="{% url 'blog_detail' item.slug %}" class="related-link">
+                        Read More →
+                    </a>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

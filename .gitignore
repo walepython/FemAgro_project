@@ -1,0 +1,46 @@
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Django database
+db.sqlite3
+db.sqlite3-*
+*.sqlite3
+*.sqlite3-journal
+
+# User-uploaded media
+media/
+
+# Generated static files
+staticfiles/
+
+# Logs
+logs/
+*.log
+
+# Migration backups
+migrations_backup_before_ckeditor4_removal/
+
+# Backup files
+db_backup_*.sqlite3
+requirements_before_ckeditor5.txt
+
+# IDE and editor
+.idea/
+.vscode/
+*.code-workspace
+
+# Operating system
+.DS_Store
+Thumbs.db

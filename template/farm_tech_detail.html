@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="tech-hero"
+         style="background-image:url('{{ technology.image.url }}');">
+
+    <div class="tech-hero-content">
+        <h1>{{ technology.title }}</h1>
+        <p>{{ technology.short_description }}</p>
+    </div>
+
+</section>
+
+<div class="tech-wrapper">
+
+    <div class="tech-content-card">
+
+        {{ technology.content|safe }}
+
+    </div>
+
+    <div class="related-section">
+
+        <h2>Related Technologies</h2>
+
+        <div class="tech-grid">
+
+            {% for item in related %}
+            <div class="tech-card">
+
+                <img src="{{ item.image.url }}">
+
+                <div class="tech-card-body">
+                    <h3>{{ item.title }}</h3>
+
+                    <a href="{% url 'technology_detail' item.slug %}"
+                       class="tech-btn">
+                        Read More
+                    </a>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

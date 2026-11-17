@@ -1,0 +1,41 @@
+<h2>Filter Crops</h2>
+
+<form method="GET">
+
+<select name="season">
+<option value="">Select Season</option>
+<option value="Rainy">Rainy Season</option>
+<option value="Dry">Dry Season</option>
+</select>
+
+<select name="soil">
+<option value="">Select Soil</option>
+<option value="Loamy">Loamy Soil</option>
+<option value="Sandy">Sandy Soil</option>
+<option value="Clay">Clay Soil</option>
+</select>
+
+<button type="submit">Filter</button>
+
+</form>
+
+
+<h2>Available Crops</h2>
+
+{% for crop in crops %}
+
+<div>
+
+<img src="{{ crop.image.url }}" width="200">
+
+<h3>{{ crop.name }}</h3>
+
+<p>{{ crop.description|safe }}</p>
+
+<a href="{% url 'crop_detail' crop.id %}">
+Read More
+</a>
+
+</div>
+
+{% endfor %}

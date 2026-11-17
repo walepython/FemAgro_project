@@ -1,0 +1,453 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Blog - FemAgro Farms{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<style>
+
+    :root{
+        --green:#1f7a53;
+        --light-bg:#eef5f0;
+        --card:#ffffff;
+        --text:#1f2937;
+        --muted:#6b7280;
+        --border:#dbe7df;
+        --shadow:0 4px 20px rgba(0,0,0,.06);
+    }
+
+    body{
+        background:var(--light-bg);
+        font-family:'DM Sans',sans-serif;
+    }
+
+    /* =========================
+       BLOG HERO
+    ========================= */
+
+    .blog-hero{
+        text-align:center;
+        padding:70px 20px 40px;
+    }
+
+    .blog-label{
+        display:inline-block;
+        background:#e6f7ee;
+        color:var(--green);
+        padding:6px 14px;
+        border-radius:30px;
+        font-size:13px;
+        font-weight:600;
+        margin-bottom:16px;
+    }
+
+    .blog-title{
+        font-size:52px;
+        font-weight:800;
+        color:var(--text);
+        margin-bottom:16px;
+        line-height:1.15;
+    }
+
+    .blog-subtitle{
+        max-width:760px;
+        margin:auto;
+        color:var(--muted);
+        font-size:17px;
+        line-height:1.8;
+    }
+
+    /* =========================
+       FILTERS
+    ========================= */
+
+    .blog-filters{
+        display:flex;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:12px;
+        margin-top:40px;
+    }
+
+    .blog-filter{
+        padding:10px 18px;
+        border-radius:40px;
+        background:#fff;
+        border:1px solid var(--border);
+        color:var(--text);
+        text-decoration:none;
+        font-size:14px;
+        transition:.3s;
+    }
+
+    .blog-filter:hover,
+    .blog-filter.active{
+        background:var(--green);
+        color:#fff;
+    }
+
+    /* =========================
+       FEATURED ARTICLE
+    ========================= */
+
+    .featured-wrapper{
+        max-width:1200px;
+        margin:60px auto;
+        padding:0 20px;
+    }
+
+    .featured-card{
+        background:#fff;
+        border-radius:24px;
+        overflow:hidden;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        box-shadow:var(--shadow);
+    }
+
+    .featured-image{
+        position:relative;
+        height:100%;
+    }
+
+    .featured-image img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
+
+    .featured-badge{
+        position:absolute;
+        top:20px;
+        left:20px;
+        background:#7c3aed;
+        color:#fff;
+        padding:8px 14px;
+        border-radius:30px;
+        font-size:13px;
+        font-weight:600;
+    }
+
+    .featured-content{
+        padding:50px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+
+    .featured-category{
+        display:inline-block;
+        width:fit-content;
+        background:#e8f8ee;
+        color:var(--green);
+        padding:7px 14px;
+        border-radius:30px;
+        font-size:13px;
+        font-weight:600;
+        margin-bottom:18px;
+    }
+
+    .featured-content h2{
+        font-size:40px;
+        line-height:1.2;
+        margin-bottom:20px;
+        color:var(--text);
+    }
+
+    .featured-content p{
+        color:var(--muted);
+        line-height:1.8;
+        margin-bottom:24px;
+    }
+
+    .featured-meta{
+        display:flex;
+        gap:20px;
+        flex-wrap:wrap;
+        color:#6b7280;
+        font-size:14px;
+        margin-bottom:30px;
+    }
+
+    .read-more{
+        color:var(--green);
+        font-weight:700;
+        text-decoration:none;
+    }
+
+    /* =========================
+       BLOG GRID
+    ========================= */
+
+    .blog-section{
+        max-width:1200px;
+        margin:auto;
+        padding:0 20px 80px;
+    }
+
+    .section-heading{
+        font-size:34px;
+        margin-bottom:30px;
+        color:var(--text);
+    }
+
+    .blog-grid{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:28px;
+    }
+
+    .blog-card{
+        background:#fff;
+        border-radius:20px;
+        overflow:hidden;
+        box-shadow:var(--shadow);
+        transition:.3s;
+    }
+
+    .blog-card:hover{
+        transform:translateY(-6px);
+    }
+
+    .blog-card-image{
+        height:240px;
+        overflow:hidden;
+    }
+
+    .blog-card-image img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        transition:.4s;
+    }
+
+    .blog-card:hover img{
+        transform:scale(1.06);
+    }
+
+    .blog-card-body{
+        padding:24px;
+    }
+
+    .blog-category{
+        display:inline-block;
+        background:#edf4ff;
+        color:#2563eb;
+        padding:6px 12px;
+        border-radius:20px;
+        font-size:12px;
+        margin-bottom:16px;
+        font-weight:600;
+    }
+
+    .blog-card h3{
+        font-size:24px;
+        margin-bottom:14px;
+        line-height:1.4;
+        color:var(--text);
+    }
+
+    .blog-card p{
+        color:var(--muted);
+        line-height:1.7;
+        margin-bottom:20px;
+    }
+
+    .blog-meta{
+        display:flex;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:10px;
+        color:#6b7280;
+        font-size:13px;
+        margin-bottom:18px;
+    }
+
+    .blog-link{
+        text-decoration:none;
+        color:var(--green);
+        font-weight:700;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media(max-width:992px){
+
+        .featured-card{
+            grid-template-columns:1fr;
+        }
+
+        .blog-grid{
+            grid-template-columns:repeat(2,1fr);
+        }
+
+        .featured-content{
+            padding:30px;
+        }
+
+        .featured-content h2{
+            font-size:32px;
+        }
+    }
+
+    @media(max-width:700px){
+
+        .blog-title{
+            font-size:38px;
+        }
+
+        .blog-grid{
+            grid-template-columns:1fr;
+        }
+
+        .featured-content h2{
+            font-size:28px;
+        }
+    }
+
+    </style>
+
+{% endblock %}
+{% block content %}
+<section class="blog-hero">
+
+    <div class="blog-label">
+        🌱 FemAgro Blog
+    </div>
+
+    <h1 class="blog-title">
+        Agricultural Insights & Resources
+    </h1>
+
+    <p class="blog-subtitle">
+        Expert advice, practical tips and modern farming innovations.
+    </p>
+
+</section>
+
+
+<!-- FEATURED POST -->
+
+{% if featured_post %}
+<section class="featured-wrapper">
+
+    <div class="featured-card">
+
+        <div class="featured-image">
+
+            <img src="{{ featured_post.image_url }}"
+                 alt="{{ featured_post.title }}">
+
+            <div class="featured-badge">
+                ★ Featured
+            </div>
+
+        </div>
+
+        <div class="featured-content">
+
+            <div class="featured-category">
+                Featured Article
+            </div>
+
+            <h2>
+                {{ featured_post.title }}
+            </h2>
+
+            <p>
+                {{ featured_post.excerpt|truncatewords:30 }}
+            </p>
+
+            <div class="featured-meta">
+
+                <span>
+                    📅 {{ featured_post.created_at|date:"M d, Y" }}
+                </span>
+
+                <span>
+                    ⏱ 5 min read
+                </span>
+
+            </div>
+
+            <a href="{% url 'blog_detail' featured_post.slug %}"
+               class="read-more">
+
+                Read Full Article →
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+{% endif %}
+
+
+
+<!-- RECENT POSTS -->
+
+<section class="blog-section">
+
+    <h2 class="section-heading">
+        Recent Articles
+    </h2>
+
+    <div class="blog-grid">
+
+        {% for post in recent_posts %}
+        <div class="blog-card">
+
+            <div class="blog-card-image">
+
+                <img src="{{ post.image_url }}"
+                     alt="{{ post.title }}">
+
+            </div>
+
+            <div class="blog-card-body">
+
+                <div class="blog-category">
+                    Agriculture
+                </div>
+
+                <h3>
+                    {{ post.title }}
+                </h3>
+
+                <p>
+                    {{ post.excerpt|truncatewords:18 }}
+                </p>
+
+                <div class="blog-meta">
+
+                    <span>
+                        📅 {{ post.created_at|date:"M d, Y" }}
+                    </span>
+
+                    <span>
+                        ⏱ 4 min read
+                    </span>
+
+                </div>
+
+                <a href="{% url 'blog_detail' post.slug %}"
+                   class="blog-link">
+
+                    Read More →
+
+                </a>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</section>
+
+{% endblock %}

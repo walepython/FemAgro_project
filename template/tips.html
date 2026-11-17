@@ -1,0 +1,9 @@
+<h2>Farmer Tips</h2>
+
+{% for tip in tips %}
+<div>
+    <h3>{{ tip.title }}</h3>
+    <img src="{{ tip.image.url }}" width="200">
+    <p>{{ tip.content|truncatewords:20 }}</p>
+</div>
+{% endfor %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Payment Failed — AgriLearn{% endblock %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+{% endblock %}
+{% block content %}
+<div style="min-height:60vh; display:flex; align-items:center;
+            justify-content:center; padding:60px 20px; text-align:center;
+            background:#f0faf5;">
+    <div style="background:#fff; border:1px solid #fecaca; border-radius:16px;
+                padding:48px 40px; max-width:480px; width:100%;
+                box-shadow:0 4px 24px rgba(220,38,38,.07);">
+
+        <div style="font-size:3.5rem; margin-bottom:16px;">❌</div>
+
+        <h1 style="font-size:1.7rem; font-weight:800; color:#111c16;
+                   margin-bottom:10px;">
+            Payment Failed
+        </h1>
+
+        <p style="font-size:14.5px; color:#5c7a68; line-height:1.75;
+                  margin-bottom:28px;">
+            Something went wrong with your payment. Don't worry —
+            no money has been charged. Please try again or use
+            bank transfer instead.
+        </p>
+
+        <div style="background:#fef2f2; border-radius:10px; padding:16px 20px;
+                    margin-bottom:28px; font-size:13.5px; color:#991b1b;
+                    line-height:1.7;">
+            If the problem persists, contact us at
+            <a href="mailto:donate@agrilearn.ng"
+               style="color:#991b1b; font-weight:600;">walepython@gmail.com</a>
+        </div>
+
+        <a href="{% url 'donate' %}"
+           style="display:inline-block; background:#0F6E56; color:#fff;
+                  padding:12px 28px; border-radius:30px; text-decoration:none;
+                  font-weight:700; font-size:14px; margin-right:8px;">
+            Try Again
+        </a>
+
+        <a href="{% url 'home' %}"
+           style="display:inline-block; border:2px solid #6b8070; color:#6b8070;
+                  padding:10px 26px; border-radius:30px; text-decoration:none;
+                  font-weight:700; font-size:14px;">
+            Go Home
+        </a>
+
+    </div>
+</div>
+{% endblock %}

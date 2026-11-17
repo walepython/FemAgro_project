@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Thank You! — FemAgro{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+{% endblock %}
+{% block content %}
+<div style="min-height:60vh; display:flex; align-items:center;
+            justify-content:center; padding:60px 20px; text-align:center;
+            background:#f0faf5;">
+    <div style="background:#fff; border:1px solid #d1e8da; border-radius:16px;
+                padding:48px 40px; max-width:480px; width:100%;
+                box-shadow:0 4px 24px rgba(15,110,86,.08);">
+
+        <div style="font-size:3.5rem; margin-bottom:16px;">🎉</div>
+
+        <h1 style="font-size:1.7rem; font-weight:800; color:#111c16;
+                   margin-bottom:10px;">
+            Thank You!
+        </h1>
+
+        <p style="font-size:14.5px; color:#5c7a68; line-height:1.75;
+                  margin-bottom:28px;">
+            Your donation has been received and confirmed.
+            You're helping us bring free agricultural knowledge
+            to thousands of farmers across Africa. 🌱
+        </p>
+
+        <div style="background:#f0faf5; border-radius:10px; padding:16px 20px;
+                    margin-bottom:28px; font-size:13.5px; color:#2c3e35;
+                    line-height:1.7;">
+            A confirmation email has been sent to your inbox.
+            If you have any questions, contact us at
+            <a href="mailto:donate@agrilearn.ng"
+               style="color:#0F6E56;">walepython@gmail.com</a>
+        </div>
+
+        <a href="{% url 'home' %}"
+           style="display:inline-block; background:#0F6E56; color:#fff;
+                  padding:12px 28px; border-radius:30px; text-decoration:none;
+                  font-weight:700; font-size:14px; margin-right:8px;">
+            Back to Home
+        </a>
+
+        <a href="{% url 'guides' %}"
+           style="display:inline-block; border:2px solid #0F6E56; color:#0F6E56;
+                  padding:10px 26px; border-radius:30px; text-decoration:none;
+                  font-weight:700; font-size:14px;">
+            Browse Guides
+        </a>
+
+    </div>
+</div>
+{% endblock %}

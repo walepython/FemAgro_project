@@ -1,0 +1,482 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Support FemAgro — Donate{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<style>
+:root {
+    --green: #0F6E56; --green-dk: #0a4f3d;
+    --green-l: #d4f0e4; --bg: #f0faf5;
+    --ink: #111c16; --ink-3: #5c7a68;
+    --border: #d1e8da; --white: #fff;
+    --radius: 14px; --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); }
+
+/* ── HERO ── */
+.don-hero {
+    background: linear-gradient(135deg, #0a4f3d 0%, #0F6E56 100%);
+    padding: 72px 20px 68px;
+    text-align: center;
+    color: #fff;
+}
+.don-hero .eyebrow {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.88);
+    font-size: 11.5px; font-weight: 600;
+    letter-spacing: .07em; text-transform: uppercase;
+    padding: 5px 15px; border-radius: 20px;
+    margin-bottom: 18px;
+}
+.don-hero h1 {
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -.02em; margin-bottom: 14px;
+}
+.don-hero p {
+    font-size: 15px; opacity: .8;
+    max-width: 460px; margin: 0 auto;
+    line-height: 1.75;
+}
+
+/* ── BODY ── */
+.don-body {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 56px 20px 80px;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+    align-items: start;
+}
+
+/* ── LEFT: impact + progress ── */
+.don-left h2 {
+    font-size: 1.4rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 12px;
+}
+.don-left > p {
+    font-size: 14px; color: var(--ink-3);
+    line-height: 1.75; margin-bottom: 28px;
+}
+
+/* Progress bar */
+.progress-box {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.05);
+}
+.progress-box h4 {
+    font-size: 13px; font-weight: 700;
+    color: var(--ink-3); text-transform: uppercase;
+    letter-spacing: .05em; margin-bottom: 14px;
+}
+.progress-bar-wrap {
+    height: 10px;
+    background: var(--bg);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #2ecc71);
+    border-radius: 20px;
+    transition: width 1s ease;
+}
+.progress-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--ink-3);
+}
+.progress-stats strong { color: var(--ink); }
+
+/* Impact list */
+.impact-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+.impact-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 13.5px;
+    color: var(--ink);
+}
+.impact-icon {
+    font-size: 22px; flex-shrink: 0;
+}
+.impact-list strong { color: var(--green); }
+
+/* Donor count strip */
+.donor-strip {
+    background: var(--green-l);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--green-dk);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ── RIGHT: donation card ── */
+.don-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 26px;
+    box-shadow: 0 4px 24px rgba(15,110,86,.09);
+    position: sticky;
+    top: 24px;
+}
+.don-card h3 {
+    font-size: 1.15rem; font-weight: 700;
+    color: var(--ink); margin-bottom: 4px;
+}
+.don-card > p {
+    font-size: 13px; color: var(--ink-3);
+    margin-bottom: 20px;
+}
+
+/* Amount grid */
+.amount-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.amount-btn {
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 13.5px; font-weight: 600;
+    color: var(--ink); cursor: pointer;
+    transition: all .18s;
+}
+.amount-btn:hover { border-color: var(--green); color: var(--green); }
+.amount-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+/* Form fields */
+.frow { margin-bottom: 14px; }
+.frow label {
+    display: block; font-size: 12.5px;
+    font-weight: 600; color: #3d5247;
+    margin-bottom: 6px;
+}
+.frow input[type="text"],
+.frow input[type="email"],
+.frow input[type="number"] {
+    width: 100%; height: 40px;
+    padding: 0 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px; color: var(--ink);
+    background: var(--white); outline: none;
+    transition: border-color .18s, box-shadow .18s;
+}
+.frow input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(15,110,86,.1);
+}
+.frow input::placeholder { color: #a0b4ab; }
+
+/* Checkboxes */
+.check-row {
+    display: flex; align-items: center; gap: 9px;
+    margin-bottom: 12px;
+    font-size: 13px; color: var(--ink-3);
+    cursor: pointer;
+}
+.check-row input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--green);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Error messages */
+.field-error {
+    font-size: 11.5px; color: #dc2626;
+    margin-top: 4px; display: block;
+}
+
+/* Pay button */
+.pay-btn {
+    width: 100%; padding: 13px;
+    background: var(--green); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 14.5px; font-weight: 700;
+    cursor: pointer; margin-top: 6px;
+    display: flex; align-items: center;
+    justify-content: center; gap: 8px;
+    transition: background .18s, transform .14s;
+}
+.pay-btn:hover { background: var(--green-dk); transform: translateY(-1px); }
+.pay-btn:active { transform: translateY(0); }
+
+.secure-note {
+    text-align: center;
+    font-size: 11.5px; color: #96b5a3;
+    margin-top: 12px;
+}
+
+/* Divider */
+.or-divider {
+    text-align: center; font-size: 12px;
+    color: #b0c4b8; margin: 16px 0;
+    position: relative;
+}
+.or-divider::before, .or-divider::after {
+    content: ''; position: absolute;
+    top: 50%; width: 42%; height: 1px;
+    background: var(--border);
+}
+.or-divider::before { left: 0; }
+.or-divider::after  { right: 0; }
+
+/* Bank transfer box */
+.bank-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    line-height: 1.7;
+}
+.bank-box strong { color: var(--ink); display: block; margin-bottom: 4px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 780px) {
+    .don-body { grid-template-columns: 1fr; }
+    .don-card { position: static; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="don-hero">
+    <div class="eyebrow">Support FemAgro</div>
+    <h1>Help Us Reach More Farmers</h1>
+    <p>Your donation funds free farming guides, expert content, and knowledge
+       tools for smallholder farmers across Africa.</p>
+</div>
+
+<div class="don-body">
+
+    <!-- LEFT: Impact + Progress -->
+    <div class="don-left">
+        <h2>Your Impact</h2>
+        <p>Every contribution — large or small — directly funds the creation
+           of new guides, translations, and tools that help farmers grow
+           smarter and earn more.</p>
+
+        <!-- Progress Bar -->
+        <div class="progress-box">
+            <h4>Fundraising Progress</h4>
+            <div class="progress-bar-wrap">
+                <div class="progress-bar-fill"
+                     style="width: {{ percentage }}%">
+                </div>
+            </div>
+            <div class="progress-stats">
+                <span>
+                    <strong>₦{{ total|floatformat:0 }}</strong> raised
+                </span>
+                <span>
+                    Goal: <strong>₦{{ goal|floatformat:0 }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Impact list -->
+        <ul class="impact-list">
+            <li>
+                <span class="impact-icon">📗</span>
+                <div><strong>₦5,000</strong> funds one complete crop guide for farmers</div>
+            </li>
+            <li>
+                <span class="impact-icon">👨‍🌾</span>
+                <div><strong>₦15,000</strong> supports 10 farmers with guides for a month</div>
+            </li>
+            <li>
+                <span class="impact-icon">🌍</span>
+                <div><strong>₦50,000</strong> sponsors an entire farming community's training</div>
+            </li>
+            <li>
+                <span class="impact-icon">📱</span>
+                <div><strong>₦100,000</strong> funds a new technology or aquaculture guide series</div>
+            </li>
+        </ul>
+
+        <!-- Donor strip -->
+        <div class="donor-strip">
+            🤝 Join our growing community of donors supporting farmers across Nigeria
+        </div>
+    </div>
+
+    <!-- RIGHT: Donation Form Card -->
+    <div class="don-card">
+        <h3>Make a Donation</h3>
+        <p>Secure payment via Paystack</p>
+
+        <form method="POST" action="{% url 'donate' %}" id="donationForm">
+            {% csrf_token %}
+
+            <!-- Quick amount buttons -->
+            <div class="amount-grid">
+                <button type="button" class="amount-btn"
+                        onclick="selectAmount(this, 5000)">₦5,000</button>
+                <button type="button" class="amount-btn"
+                        onclick="selectAmount(this, 10000)">₦10,000</button>
+                <button type="button" class="amount-btn active"
+                        onclick="selectAmount(this, 25000)">₦25,000</button>
+                <button type="button" class="amount-btn"
+                        onclick="selectAmount(this, 50000)">₦50,000</button>
+            </div>
+
+            <!-- Amount field (hidden — synced from buttons) -->
+            <div class="frow">
+                <label>Custom Amount (₦)</label>
+                <input type="number"
+                       name="amount"
+                       id="amountInput"
+                       value="{{ form.amount.value|default:'25000' }}"
+                       placeholder="e.g. 25000"
+                       min="100"
+                       oninput="clearSelected()">
+                {% if form.amount.errors %}
+                <span class="field-error">{{ form.amount.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Name -->
+            <div class="frow">
+                <label>Your Name (optional)</label>
+                <input type="text"
+                       name="donor_name"
+                       value="{{ form.donor_name.value|default:'' }}"
+                       placeholder="e.g. Emeka Adeyemi">
+                {% if form.donor_name.errors %}
+                <span class="field-error">{{ form.donor_name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="frow">
+                <label>Email Address <span style="color:#dc2626;">*</span></label>
+                <input type="email"
+                       name="email"
+                       value="{{ form.email.value|default:'' }}"
+                       placeholder="your@email.com"
+                       required>
+                {% if form.email.errors %}
+                <span class="field-error">{{ form.email.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <!-- Checkboxes -->
+            <label class="check-row">
+                <input type="checkbox" name="anonymous"
+                       {% if form.anonymous.value %}checked{% endif %}>
+                Donate anonymously
+            </label>
+
+            <label class="check-row">
+                <input type="checkbox" name="monthly"
+                       {% if form.monthly.value %}checked{% endif %}>
+                Make this a monthly donation
+            </label>
+
+            <!-- Form errors -->
+            {% if form.non_field_errors %}
+            <div style="background:#fef2f2; border:1px solid #fecaca;
+                        color:#991b1b; border-radius:8px; padding:10px 14px;
+                        font-size:13px; margin-bottom:12px;">
+                {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+
+            <!-- Submit -->
+            <button type="submit" class="pay-btn">
+                Donate Now
+                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                    <path d="M2 7.5h11M9 3.5l4 4-4 4"
+                          stroke="#fff" stroke-width="1.6"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <p class="secure-note">🔒 Payments secured by Paystack</p>
+
+        </form>
+
+        <!-- Bank Transfer Alternative -->
+        <div class="or-divider">or pay via bank transfer</div>
+        <div class="bank-box">
+            <strong>Direct Bank Transfer</strong>
+            Bank: First Bank Nigeria<br>
+            Account: <strong>123 456 7890</strong><br>
+            Name: <strong>AgriLearn Foundation</strong><br>
+            <span style="font-size:11.5px; margin-top:6px; display:block;">
+                Send your receipt to
+                <a href="mailto:donate@agrilearn.ng"
+                   style="color:var(--green);">donate@agrilearn.ng</a>
+            </span>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Sync amount buttons with the input field
+function selectAmount(btn, amount) {
+    document.querySelectorAll('.amount-btn')
+            .forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('amountInput').value = amount;
+}
+
+function clearSelected() {
+    document.querySelectorAll('.amount-btn')
+            .forEach(b => b.classList.remove('active'));
+}
+
+// Highlight the active button on page load
+document.addEventListener('DOMContentLoaded', function () {
+    const val = parseInt(document.getElementById('amountInput').value);
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        if (parseInt(btn.textContent.replace(/[^\d]/g,'')) === val) {
+            btn.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}

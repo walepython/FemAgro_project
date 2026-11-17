@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - Agrivista Farms{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(rgba(26,58,46,0.8), rgba(30,92,80,0.85)),
+            url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1400&q=80') center/cover no-repeat;
+        padding: 80px 0;
+        color: #fff;
+        text-align: center;
+    }
+    .page-hero h1 { font-size: 2.5rem; margin-bottom: 10px; }
+
+    .services-grid { padding: 80px 0; }
+    .service-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 40px 30px;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.07);
+        height: 100%;
+        border-left: 4px solid var(--primary);
+        transition: transform 0.25s;
+    }
+    .service-card:hover { transform: translateY(-5px); }
+    .service-icon {
+        width: 68px; height: 68px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; color: #fff; margin-bottom: 20px;
+    }
+    .service-card h4 { color: var(--dark-green); margin-bottom: 12px; }
+    .service-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <h1>Our Services</h1>
+        <p>Comprehensive agricultural solutions powered by technology and expertise.</p>
+    </div>
+</section>
+
+<section class="services-grid">
+    <div class="container">
+        {% if services %}
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas {{ service.icon }}"></i></div>
+                    <h4>{{ service.title }}</h4>
+                    <p>{{ service.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="row g-4">
+            {% for s in "1 2 3 4 5 6 7 8 9"|split:" " %}{% endfor %}
+            <!-- Default display -->
+            {% with default_services="fa-seedling,Crop Management,Expert planning and management for maximum sustainable yield across all seasons and crop types.|fa-tractor,Precision Farming,GPS, drone, and IoT-powered solutions to optimize every inch of your land.|fa-flask,Soil Analysis,Comprehensive soil testing and remediation plans for optimal nutrient balance.|fa-tint,Irrigation Systems,Smart water management systems that reduce usage by up to 40% while increasing yield.|fa-chart-line,Farm Analytics,Real-time dashboards and data insights to drive better farming decisions.|fa-leaf,Organic Certification,Full support through organic certification from application to compliance.|fa-cloud-sun,Weather Intelligence,AI-powered weather prediction and crop planning recommendations.|fa-people-carry,Farm Consulting,On-site expert consultants for strategic farm planning and operations.|fa-shield-alt,Crop Insurance Advisory,Guidance on crop insurance options and risk management strategies." %}
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-seedling"></i></div>
+                <h4>Crop Management</h4>
+                <p>Expert planning and management for maximum sustainable yield across all seasons and crop types.</p>
+            </div></div>
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-tractor"></i></div>
+                <h4>Precision Farming</h4>
+                <p>GPS, drone, and IoT-powered solutions to optimize every inch of your farm.</p>
+            </div></div>
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-flask"></i></div>
+                <h4>Soil Analysis</h4>
+                <p>Comprehensive soil testing and custom remediation plans for optimal nutrient balance.</p>
+            </div></div>
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-tint"></i></div>
+                <h4>Irrigation Systems</h4>
+                <p>Smart water management systems that reduce usage by up to 40% while increasing yield.</p>
+            </div></div>
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                <h4>Farm Analytics</h4>
+                <p>Real-time dashboards and data insights to drive smarter, more profitable farming decisions.</p>
+            </div></div>
+            <div class="col-lg-4 col-md-6"><div class="service-card">
+                <div class="service-icon"><i class="fas fa-leaf"></i></div>
+                <h4>Organic Certification</h4>
+                <p>Full support through the organic certification process from application to annual compliance.</p>
+            </div></div>
+            {% endwith %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

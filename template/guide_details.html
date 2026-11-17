@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ guide.title }} — FemAgro{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<style>
+:root {
+    --forest:#0d4a2f; --green:#0F6E56; --green-l:#d1f0e4;
+    --sage:#e8f5ee; --cream:#faf8f3; --ink:#111c16; --ink-2:#2e4238;
+    --ink-3:#5c7a68; --ink-4:#96b5a3; --border:#cce5d8;
+    --white:#fff; --radius:14px; --radius-sm:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);}
+
+/* HERO BANNER */
+.dh { position:relative; height:300px; overflow:hidden; }
+.dh img { width:100%; height:100%; object-fit:cover; display:block; filter:brightness(.65); }
+.dh::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to bottom,rgba(10,25,15,.15) 0%,rgba(10,25,15,.6) 100%);
+}
+
+/* CONTENT CARD */
+.dp { max-width:800px; margin:-130px auto 0; padding:0 20px 80px; position:relative; z-index:2; }
+
+.d-card {
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:0 10px 48px rgba(22,101,52,.13);
+    padding:40px 44px 48px; margin-bottom:40px;
+}
+
+/* Back row */
+.d-nav {
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:22px; flex-wrap:wrap;
+}
+.back-link {
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:13px; font-weight:500; color:var(--ink-3);
+    text-decoration:none; transition:color .18s;
+}
+.back-link:hover { color:var(--green); }
+.back-link svg { width:14px; height:14px; }
+.cat-pill {
+    display:inline-block; font-size:11px; font-weight:700;
+    letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 10px; border-radius:20px; width:fit-content;
+    background:var(--green-l); color:var(--forest);
+}
+
+/* Title */
+.d-title {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(1.6rem,3.5vw,2.1rem);
+    font-weight:700; color:var(--ink);
+    line-height:1.22; margin-bottom:16px;
+}
+
+/* Meta */
+.d-meta {
+    display:flex; align-items:center; gap:18px;
+    font-size:12.5px; color:var(--ink-4);
+    margin-bottom:28px; padding-bottom:22px;
+    border-bottom:1.5px solid var(--border); flex-wrap:wrap;
+}
+.d-meta span { display:flex; align-items:center; gap:5px; }
+.d-meta svg  { width:13px; height:13px; opacity:.65; }
+
+/* Short description intro */
+.d-intro {
+    background:var(--sage); border-left:3px solid var(--green);
+    border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    padding:16px 20px; margin-bottom:28px;
+    font-size:14px; color:var(--ink-2); line-height:1.7;
+    font-style:italic;
+}
+
+/* Rich content body */
+.d-body { font-size:14.5px; color:var(--ink-2); line-height:1.85; }
+.d-body p      { margin-bottom:16px; }
+.d-body h2     { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:700; color:var(--ink); margin:28px 0 10px; }
+.d-body h3     { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--ink); margin:22px 0 8px; }
+.d-body ul, .d-body ol { padding-left:22px; margin-bottom:16px; }
+.d-body li     { margin-bottom:7px; }
+.d-body strong { color:var(--ink); font-weight:600; }
+.d-body a      { color:var(--green); }
+.d-body img    { max-width:100%; border-radius:var(--radius-sm); margin:16px 0; }
+.d-body blockquote {
+    border-left:3px solid var(--green);
+    background:var(--sage); padding:14px 20px;
+    border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    color:var(--ink-2); font-style:italic; margin:16px 0;
+}
+.d-body table  { width:100%; border-collapse:collapse; margin:16px 0; font-size:13.5px; }
+.d-body th     { background:var(--sage); padding:10px 14px; text-align:left; font-weight:600; border:1px solid var(--border); }
+.d-body td     { padding:10px 14px; border:1px solid var(--border); }
+
+/* Share footer */
+.d-share {
+    margin-top:36px; padding-top:22px;
+    border-top:1.5px solid var(--border);
+    text-align:center; font-size:13px; color:var(--ink-3);
+}
+.d-share a {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--green); color:#fff;
+    padding:9px 18px; border-radius:var(--radius-sm);
+    font-size:13px; font-weight:600;
+    text-decoration:none; margin-top:10px; transition:background .18s;
+}
+.d-share a:hover { background:var(--forest); }
+
+/* MORE GUIDES */
+.more-label {
+    font-family:'Playfair Display',serif;
+    font-size:1.15rem; font-weight:700; color:var(--ink);
+    margin-bottom:18px;
+}
+.more-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+.mc {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:10px; overflow:hidden;
+    text-decoration:none; color:inherit; display:block;
+    transition:transform .2s, box-shadow .2s;
+}
+.mc:hover { transform:translateY(-3px); box-shadow:0 6px 24px rgba(22,101,52,.12); color:inherit; }
+.mc img    { width:100%; height:110px; object-fit:cover; display:block; transition:transform .3s; }
+.mc:hover img { transform:scale(1.05); }
+.mc-body   { padding:12px 14px 14px; }
+.mc-body .cat-pill { font-size:10px; padding:2px 8px; margin-bottom:6px; display:inline-block; }
+.mc-body h4 {
+    font-family:'Playfair Display',serif;
+    font-size:.88rem; font-weight:700; color:var(--ink); line-height:1.35;
+}
+
+@media(max-width:700px){
+    .dh { height:200px; }
+    .dp { margin-top:-80px; }
+    .d-card { padding:24px 18px 28px; }
+    .more-grid { grid-template-columns:1fr; }
+}
+@media(max-width:480px){ .dp { padding:0 12px 60px; } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- HERO -->
+<div class="dh">
+    {% if guide.image %}
+    <img src="{{ guide.image.url }}" alt="{{ guide.title }}">
+    {% else %}
+    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1200&q=80"
+         alt="{{ guide.title }}">
+    {% endif %}
+</div>
+
+<div class="dp">
+
+    <!-- MAIN CARD -->
+    <div class="d-card">
+
+        <!-- Nav -->
+        <div class="d-nav">
+            <a href="{% url 'guides' %}" class="back-link">
+                <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M10 7H4M6 4l-3 3 3 3" stroke="currentColor"
+                          stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Back to Guides
+            </a>
+            <span class="cat-pill">{{ guide.category.name }}</span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="d-title">{{ guide.title }}</h1>
+
+        <!-- Meta -->
+        <div class="d-meta">
+            <span>
+                <svg viewBox="0 0 14 14" fill="none">
+                    <circle cx="7" cy="5" r="3" stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M2 13c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor"
+                          stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                AgriLearn Team
+            </span>
+            <span>
+                <svg viewBox="0 0 14 14" fill="none">
+                    <rect x="1" y="2" width="12" height="11" rx="2"
+                          stroke="currentColor" stroke-width="1.3"/>
+                    <path d="M1 6h12M5 1v2M9 1v2" stroke="currentColor"
+                          stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                {{ guide.created_at|date:"F d, Y" }}
+            </span>
+            <span>
+                <svg viewBox="0 0 14 14" fill="none">
+                    <path d="M2 4h10M2 7h7M2 10h5" stroke="currentColor"
+                          stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                {{ guide.category.name }}
+            </span>
+        </div>
+
+        <!-- Short description intro box -->
+        <div class="d-intro">{{ guide.short_description }}</div>
+
+        <!-- Full content from RichTextField -->
+        <div class="d-body">
+            {{ guide.content|safe }}
+        </div>
+
+        <!-- Share -->
+        <div class="d-share">
+            Found this guide helpful? Share it with a fellow farmer. 🌾
+        </div>
+
+    </div>
+
+    <!-- MORE FROM SAME CATEGORY -->
+    {% if more %}
+    <div class="more-label">More {{ guide.category.name }} Guides</div>
+    <div class="more-grid">
+        {% for g in more %}
+        <a href="{% url 'guide_detail' g.slug %}" class="mc">
+            {% if g.image %}
+            <img src="{{ g.image.url }}" alt="{{ g.title }}">
+            {% else %}
+            <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=400&q=70"
+                 alt="{{ g.title }}">
+            {% endif %}
+            <div class="mc-body">
+                <span class="cat-pill">{{ g.category.name }}</span>
+                <h4>{{ g.title }}</h4>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

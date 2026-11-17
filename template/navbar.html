@@ -1,0 +1,203 @@
+{% load static %}
+
+{% block extra_css%}
+<link rel="stylesheet" href="{% static 'navbar.css' %}">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+{% endblock %}
+<header class="agrilearn-header">
+
+    <!-- ===== TOP BAR: dark teal brand bar ===== -->
+    <nav class="navbar-top">
+        <div class="navbar-container">
+
+            <!-- LOGO -->
+            <a href="{% url 'home' %}" class="navbar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-leaf" style="color: #fff;"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-name">FemAgro</span>
+                    <span class="logo-tagline">Educational Platform</span>
+                </div>
+            </a>
+
+            <!-- MAIN NAV LINKS -->
+            <ul class="navbar-links">
+                <li><a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a></li>
+                <li><a href="{% url 'guides' %}" class="nav-link {% if request.resolver_match.url_name == 'guides' %}active{% endif %}">Guides</a></li>
+                <li><a href="{% url 'farm_technology' %}" class="nav-link {% if request.resolver_match.url_name == 'farm_technology' %}active{% endif %}">Farm Technology</a></li>
+                <li><a href="{% url 'blog' %}" class="nav-link {% if request.resolver_match.url_name == 'blog' %}active{% endif %}">Blog</a></li>
+                <li><a href="{% url 'donate' %}" class="nav-link {% if request.resolver_match.url_name == 'donate' %}active{% endif %}">❤️ Support FemAgro</a></li>
+                <li><a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a></li>
+            </ul>
+
+            <!-- RIGHT: Search + Auth -->
+            <div class="navbar-right">
+
+                <form action="{% url 'search' %}" method="GET" class="navbar-search">
+                    <svg class="search-icon" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="rgba(255,255,255,0.65)" stroke-width="1.6"/>
+                        <path d="M14 14L18 18" stroke="rgba(255,255,255,0.65)" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+
+                    <input
+                        type="text"
+                        name="q"
+                        class="search-input"
+                        placeholder="Search crops..."
+                        value="{{ request.GET.q }}"
+                    >
+                </form>
+
+                <!-- Auth -->
+                {% if user.is_authenticated %}
+                    <div class="user-menu">
+                        <div class="user-avatar">{{ user.get_full_name|default:user.username|first|upper }}</div>
+                        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+                        <a href="{% url 'logout' %}" class="btn-nav-outline">Logout</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-nav-outline">Login</a>
+                    <a href="{% url 'signup' %}" class="btn-nav-solid">Register</a>
+                {% endif %}
+
+                <!-- Mobile hamburger -->
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ===== CATEGORY BAR: icon grid row ===== -->
+    <div class="category-bar">
+        <div class="navbar-container">
+            <span class="category-label">Browse by type</span>
+            <div class="category-divider"></div>
+            <nav class="category-links">
+
+                <a href="{% url 'category_list' 'annual-crops' %}"
+                   class="category-item {% if active_category == 'annual-crops' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-seedling" style="color: teal;"></i></span>
+                    <span class="cat-name">Annual Crops</span>
+                </a>
+
+                <a href="{% url 'category_list' 'cash-crops' %}"
+                   class="category-item {% if active_category == 'cash-crops' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-money-bill-wave" style="color: teal;"></i></span>
+                    <span class="cat-name">Cash Crops</span>
+                </a>
+
+                <a href="{% url 'category_list' 'livestock' %}"
+                   class="category-item {% if active_category == 'livestock' %}active{% endif %}">
+                    <span class="cat-icon"><i class='fas fa-horse' style='font-size:20px; color: teal;'></i></span>
+                    <span class="cat-name">Livestock</span>
+                </a>
+
+                <a href="{% url 'category_list' 'vegetables' %}"
+                   class="category-item {% if active_category == 'vegetables' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-carrot" style="color: teal;"></i></span>
+                    <span class="cat-name">Vegetables</span>
+                </a>
+
+                <a href="{% url 'category_list' 'fruits' %}"
+                   class="category-item {% if active_category == 'fruits' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-apple-whole" style="color: teal;"></i></span>
+                    <span class="cat-name">Fruits</span>
+                </a>
+
+                <a href="{% url 'category_list' 'tree-crops' %}"
+                   class="category-item {% if active_category == 'tree-crops' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-tree" style="color: teal;"></i></span>
+                    <span class="cat-name">Tree Crops</span>
+                </a>
+
+                <a href="{% url 'category_list' 'aquaculture' %}"
+                   class="category-item {% if active_category == 'aquaculture' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-fish" style="color: teal;"></i></span>
+                    <span class="cat-name">Aquaculture</span>
+                </a>
+
+                <a href="{% url 'category_list' 'poultry' %}"
+                   class="category-item {% if active_category == 'poultry' %}active{% endif %}">
+                    <span class="cat-icon"><i class="fas fa-kiwi-bird" style="color: teal;"></i></span>
+                    <span class="cat-name">Poultry</span>
+                </a>
+
+            </nav>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE MENU (hidden by default) ===== -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-inner">
+            <a href="{% url 'home' %}" class="mobile-nav-link">Home</a>
+            <a href="{% url 'about' %}" class="mobile-nav-link">About</a>
+            <a href="{% url 'guides' %}" class="mobile-nav-link">Guides</a>
+            <a href="{% url 'farm_technology' %}" class="mobile-nav-link">Farm Technology</a>
+            <a href="{% url 'blog' %}" class="mobile-nav-link">Blog</a>
+            <a href="{% url 'contact' %}" class="mobile-nav-link">Contact</a>
+            <hr class="mobile-divider">
+            <p class="mobile-cat-label">Categories</p>
+            <div class="mobile-categories">
+                <a href="{% url 'category_list' 'annual-crops' %}" class="mobile-cat-chip"> Annual Crops</a>
+                <a href="{% url 'category_list' 'cash-crops' %}" class="mobile-cat-chip"> Cash Crops</a>
+                <a href="{% url 'category_list' 'livestock' %}" class="mobile-cat-chip"> Livestock</a>
+                <a href="{% url 'category_list' 'vegetables' %}" class="mobile-cat-chip"> Vegetables</a>
+                <a href="{% url 'category_list' 'fruits' %}" class="mobile-cat-chip"> Fruits</a>
+                <a href="{% url 'category_list' 'tree-crops' %}" class="mobile-cat-chip"> Tree Crops</a>
+                <a href="{% url 'category_list' 'aquaculture' %}" class="mobile-cat-chip"> Aquaculture</a>
+                <a href="{% url 'category_list' 'poultry' %}" class="mobile-cat-chip"> Poultry</a>
+            </div>
+            <hr class="mobile-divider">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="mobile-nav-link">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="mobile-nav-link">Login</a>
+                <a href="{% url 'signup' %}" class="mobile-nav-link mobile-register">Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+</header>
+<script>
+
+    // ✅ Search only submits when user presses Enter or clicks search icon
+const searchInput = document.querySelector('.search-input');
+
+if (searchInput) {
+    // Submit on Enter key
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const q = this.value.trim();
+            if (q) {
+                window.location.href = '/farm/search/?q=' + encodeURIComponent(q);
+            }
+        }
+    });
+
+    // Clear on Escape
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            this.value = '';
+            this.blur();
+        }
+    });
+}
+
+// Also make the search form submit to the right URL
+const searchForm = document.querySelector('.navbar-search');
+if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const q = searchInput.value.trim();
+        if (q) {
+            window.location.href = '/farm/search/?q=' + encodeURIComponent(q);
+        }
+    });
+}
+</script>

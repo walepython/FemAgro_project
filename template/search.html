@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Search: {{ query }} — FemAgro{% endblock %}
+
+{% block content %}
+<div style="max-width:900px; margin:40px auto; padding:0 20px 80px;">
+
+    <!-- Search heading -->
+    <h2 style="font-size:1.5rem; font-weight:700; color:#14231b; margin-bottom:6px;">
+        {% if query %}
+            Search results for "{{ query }}"
+        {% else %}
+            Search FemAgro
+        {% endif %}
+    </h2>
+
+    {% if query %}
+    <p style="font-size:13.5px; color:#6b8070; margin-bottom:28px;">
+        {{ total }} result{{ total|pluralize }} found
+    </p>
+    {% endif %}
+
+    <!-- Search form (re-search from results page) -->
+    <form method="GET" action="{% url 'search' %}"
+          style="display:flex; gap:10px; margin-bottom:36px;">
+        <input type="text" name="q" value="{{ query }}"
+               placeholder="Search crops, livestock, fish..."
+               style="flex:1; height:42px; padding:0 16px; border:1.5px solid #d1e8da;
+                      border-radius:8px; font-size:14px; outline:none;">
+        <button type="submit"
+                style="height:42px; padding:0 22px; background:#0F6E56; color:#fff;
+                       border:none; border-radius:8px; font-size:14px;
+                       font-weight:600; cursor:pointer;">
+            Search
+        </button>
+    </form>
+
+    {% if query %}
+
+        <!-- PRODUCTS -->
+        {% if products %}
+        <div style="margin-bottom:36px;">
+            <h3 style="font-size:13px; font-weight:700; letter-spacing:.06em;
+                       text-transform:uppercase; color:#6b8070; margin-bottom:16px;">
+                Crops & Vegetables ({{ products.count }})
+            </h3>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                {% for item in products %}
+                <a href="{% url 'crop_detail' item.id %}"
+                   style="background:#fff; border:1px solid #d1e8da; border-radius:12px;
+                          overflow:hidden; text-decoration:none; display:block;
+                          transition:transform .2s, box-shadow .2s;"
+                   onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 20px rgba(22,101,52,.12)'"
+                   onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                         style="width:100%; height:130px; object-fit:cover; display:block;">
+                    {% endif %}
+                    <div style="padding:12px 14px;">
+                        <span style="font-size:10.5px; font-weight:700; background:#dcfce7;
+                                     color:#166534; padding:2px 8px; border-radius:20px;">
+                            {{ item.category.name }}
+                        </span>
+                        <p style="font-size:14px; font-weight:600; color:#14231b;
+                                  margin:8px 0 4px;">{{ item.name }}</p>
+                        <p style="font-size:12px; color:#6b8070; line-height:1.5;
+                                  margin:0; display:-webkit-box; -webkit-line-clamp:2;
+                                  -webkit-box-orient:vertical; overflow:hidden;">
+                            {{ item.description|striptags|truncatewords:12 }}
+                        </p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- LIVESTOCK -->
+        {% if livestock %}
+        <div style="margin-bottom:36px;">
+            <h3 style="font-size:13px; font-weight:700; letter-spacing:.06em;
+                       text-transform:uppercase; color:#6b8070; margin-bottom:16px;">
+                Livestock ({{ livestock.count }})
+            </h3>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                {% for item in livestock %}
+                <a href="{% url 'livestock_detail' item.id %}"
+                   style="background:#fff; border:1px solid #d1e8da; border-radius:12px;
+                          overflow:hidden; text-decoration:none; display:block;
+                          transition:transform .2s, box-shadow .2s;"
+                   onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 20px rgba(22,101,52,.12)'"
+                   onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                         style="width:100%; height:130px; object-fit:cover; display:block;">
+                    {% endif %}
+                    <div style="padding:12px 14px;">
+                        <span style="font-size:10.5px; font-weight:700; background:#fef3c7;
+                                     color:#92400e; padding:2px 8px; border-radius:20px;">
+                            {{ item.category.name }}
+                        </span>
+                        <p style="font-size:14px; font-weight:600; color:#14231b;
+                                  margin:8px 0 4px;">{{ item.name }}</p>
+                        <p style="font-size:12px; color:#6b8070; line-height:1.5; margin:0;
+                                  display:-webkit-box; -webkit-line-clamp:2;
+                                  -webkit-box-orient:vertical; overflow:hidden;">
+                            {{ item.description|striptags|truncatewords:12 }}
+                        </p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- AQUACULTURE -->
+        {% if aquaculture %}
+        <div style="margin-bottom:36px;">
+            <h3 style="font-size:13px; font-weight:700; letter-spacing:.06em;
+                       text-transform:uppercase; color:#6b8070; margin-bottom:16px;">
+                Aquaculture ({{ aquaculture.count }})
+            </h3>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                {% for item in aquaculture %}
+                <a href="{% url 'livestock_detail' item.id %}"
+                   style="background:#fff; border:1px solid #d1e8da; border-radius:12px;
+                          overflow:hidden; text-decoration:none; display:block;
+                          transition:transform .2s, box-shadow .2s;"
+                   onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 6px 20px rgba(22,101,52,.12)'"
+                   onmouseout="this.style.transform='';this.style.boxShadow=''">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                         style="width:100%; height:130px; object-fit:cover; display:block;">
+                    {% endif %}
+                    <div style="padding:12px 14px;">
+                        <span style="font-size:10.5px; font-weight:700; background:#e0f2fe;
+                                     color:#075985; padding:2px 8px; border-radius:20px;">
+                            {{ item.category.name }}
+                        </span>
+                        <p style="font-size:14px; font-weight:600; color:#14231b;
+                                  margin:8px 0 4px;">{{ item.name }}</p>
+                        <p style="font-size:12px; color:#6b8070; line-height:1.5; margin:0;
+                                  display:-webkit-box; -webkit-line-clamp:2;
+                                  -webkit-box-orient:vertical; overflow:hidden;">
+                            {{ item.description|striptags|truncatewords:12 }}
+                        </p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- NO RESULTS -->
+        {% if not products and not livestock and not aquaculture %}
+        <div style="text-align:center; padding:60px 20px; color:#6b8070;">
+            <div style="font-size:3rem; margin-bottom:14px;">🔍</div>
+            <h3 style="font-size:1.1rem; color:#3d5247; margin-bottom:8px;">
+                No results for "{{ query }}"
+            </h3>
+            <p style="font-size:13.5px;">
+                Try searching for a crop name like <strong>Maize</strong>,
+                <strong>Tomato</strong>, or <strong>Catfish</strong>.
+            </p>
+        </div>
+        {% endif %}
+
+    {% else %}
+    <!-- No query yet -->
+    <div style="text-align:center; padding:60px 20px; color:#6b8070;">
+        <div style="font-size:3rem; margin-bottom:14px;">🌾</div>
+        <p style="font-size:14px;">
+            Type a crop name above to search across all categories.
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

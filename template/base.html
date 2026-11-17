@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <title>{% block title %}FemAgro — Educational Platform{% endblock %}</title>
+
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="{% static 'navbar.css' %}">
+
+    <!-- Your other CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- ===== NAVBAR (include the partial) ===== -->
+    {% include 'navbar.html' %}
+
+    <!-- ===== DJANGO MESSAGES ===== -->
+    {% if messages %}
+    <div class="messages-wrapper">
+        {% for message in messages %}
+        <div class="message message--{{ message.tags }}">
+            {{ message }}
+            <button class="message-close" onclick="this.parentElement.remove()">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content" style="margin-top: 30px;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="logo-icon" style="width:36px;height:36px;background:#2ECC71;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:5px;">
+                        <i class="fas fa-leaf" style="color: #fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:16px;font-weight:700;color:#fff;">FemAgro</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,0.55);">Educational Platform</div>
+                    </div>
+                </div>
+                <p class="footer-desc">Teaching people how to plant, grow, and benefit from crops across Africa and beyond.</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <a href="{% url 'category_list' 'annual-crops' %}">Annual Crops</a>
+                    <a href="{% url 'category_list' 'cash-crops' %}">Cash Crops</a>
+                    <a href="{% url 'category_list' 'livestock' %}">Livestock</a>
+                    <a href="{% url 'category_list' 'vegetables' %}">Vegetables</a>
+                    <a href="{% url 'category_list' 'fruits' %}">Fruits</a>
+                    <a href="{% url 'category_list' 'tree-crops' %}">Tree Crops</a>
+                    <a href="{% url 'category_list' 'aquaculture' %}">Aquaculture</a>
+                    <a href="{% url 'category_list' 'poultry' %}">Poultry</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Learn</h4>
+                    <a href="#">Planting Guide</a>
+                    <a href="#">Soil Types</a>
+                    <a href="#">Seasons</a>
+                    <a href="#">Farming Tips</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Platform</h4>
+                    <a href="{% url 'about' %}">About</a>
+                    <a href="{% url 'contact' %}">Contact</a>
+                    <a href="{% url 'farm_technology' %}">Farm Technology</a>
+                    <a href="{% url 'blog' %}">Blog</a>
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'signup' %}">Register</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {% now "Y" %} FemAgro Educational Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ===== NAVBAR JS ===== -->
+    <script>
+        const hamburger = document.getElementById('hamburgerBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        // Toggle on click
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            const spans = hamburger.querySelectorAll('span');
+            if (mobileMenu.classList.contains('open')) {
+                spans[0].style.transform = 'translateY(7px) rotate(45deg)';
+                spans[1].style.opacity = '0';
+                spans[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+            } else {
+                spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !hamburger.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+                hamburger.querySelectorAll('span').forEach(s => {
+                    s.style.transform = '';
+                    s.style.opacity = '';
+                });
+            }
+        });
+
+        // ✅ FIX: Close menu when screen resizes to desktop width
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) {
+                mobileMenu.classList.remove('open');
+                hamburger.querySelectorAll('span').forEach(s => {
+                    s.style.transform = '';
+                    s.style.opacity = '';
+                });
+            }
+        });
+
+        // Auto dismiss messages
+        setTimeout(() => {
+            document.querySelectorAll('.message').forEach(el => el.remove());
+        }, 5000);
+
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
+
+
+<!-- ===== INLINE STYLES for footer & messages ===== -->
+<style>
+    /* Messages */
+    .messages-wrapper {
+        position: fixed;
+        top: 120px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 340px;
+    }
+    .message {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13.5px;
+        font-weight: 500;
+        background: #fff;
+        border-left: 4px solid #0F6E56;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        animation: slideIn 0.25s ease;
+    }
+    .message--error { border-left-color: #dc2626; }
+    .message--warning { border-left-color: #d97706; }
+    .message--success { border-left-color: #16a34a; }
+    .message-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #9ca3af;
+        font-size: 12px;
+        padding: 0;
+        flex-shrink: 0;
+    }
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(20px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Main content */
+    .main-content {
+        min-height: calc(100vh - 112px);
+    }
+
+    /* Footer */
+    .site-footer {
+        background: #0F6E56;
+        padding: 48px 0 0;
+        margin-top: 60px;
+    }
+    /* .footer-container {
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        justify-content: space-between;
+        gap: 48px;
+
+    } */
+    .footer-brand { flex: 1; min-width: 220px; }
+    .footer-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    .footer-desc {
+        font-size: 13px;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.7;
+        max-width: 280px;
+        margin: 0;
+    }
+    .footer-links {
+        display: flex;
+        gap: 48px;
+        /* flex-wrap: wrap; */
+    }
+    .footer-col h4 {
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin: 0 0 14px;
+    }
+    .footer-col a {
+        display: block;
+        color: rgba(255,255,255,0.78);
+        text-decoration: none;
+        font-size: 13.5px;
+        margin-bottom: 10px;
+        transition: color 0.15s;
+    }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.12);
+        margin-top: 40px;
+        padding: 16px 24px;
+        text-align: center;
+    }
+    .footer-bottom p {
+        font-size: 12px;
+        color: rgba(255,255,255,0.4);
+        margin: 0;
+    }
+
+    @media (max-width: 640px) {
+        .footer-container { flex-direction: column; gap: 32px; }
+        .footer-links { gap: 24px; }
+    }
+</style>

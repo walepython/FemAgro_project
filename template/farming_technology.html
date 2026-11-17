@@ -1,0 +1,291 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<style>
+:root{
+    --green:#2d6a4f;
+    --green-light:#edf7f0;
+    --dark:#1b4332;
+    --text:#344e41;
+    --white:#ffffff;
+    --shadow:0 4px 18px rgba(0,0,0,0.08);
+}
+
+body{
+    background:#f5faf6;
+}
+
+.tech-hero{
+    background:linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.55)),
+    url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=1600&q=80') center/cover;
+    height:420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:white;
+    padding:20px;
+}
+
+.tech-hero-content h1{
+    font-size:3rem;
+    margin-bottom:18px;
+    font-family:'Merriweather', serif;
+}
+
+.tech-hero-content p{
+    max-width:760px;
+    line-height:1.8;
+    font-size:1.1rem;
+}
+
+.tech-wrapper{
+    max-width:1200px;
+    margin:auto;
+    padding:70px 20px;
+}
+
+.tech-section-title{
+    text-align:center;
+    margin-bottom:55px;
+}
+
+.tech-section-title h2{
+    font-size:2.4rem;
+    color:var(--dark);
+    margin-bottom:12px;
+}
+
+.tech-section-title p{
+    color:#5f6f65;
+    max-width:700px;
+    margin:auto;
+    line-height:1.8;
+}
+
+.tech-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px,1fr));
+    gap:28px;
+}
+
+.tech-card{
+    background:var(--white);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    transition:.3s ease;
+    border:1px solid #d8eadc;
+}
+
+.tech-card:hover{
+    transform:translateY(-6px);
+}
+
+.tech-card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.tech-card-body{
+    padding:24px;
+}
+
+.tech-card-body h3{
+    color:var(--dark);
+    margin-bottom:16px;
+    font-size:1.45rem;
+}
+
+.tech-list{
+    list-style:none;
+    padding:0;
+}
+
+.tech-list li{
+    margin-bottom:14px;
+    color:var(--text);
+    line-height:1.7;
+    display:flex;
+    gap:10px;
+}
+
+.tech-list li span{
+    color:var(--green);
+    font-weight:bold;
+}
+
+.tech-highlight{
+    margin-top:80px;
+    background:var(--green-light);
+    padding:60px 30px;
+    border-radius:24px;
+    border:1px solid #cfe6d5;
+}
+
+.tech-highlight h2{
+    text-align:center;
+    color:var(--dark);
+    margin-bottom:40px;
+    font-size:2rem;
+}
+
+.highlight-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+}
+
+.highlight-box{
+    background:white;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:var(--shadow);
+}
+
+.highlight-box h4{
+    color:var(--green);
+    margin-bottom:10px;
+    font-size:1.2rem;
+}
+
+.highlight-box p{
+    color:var(--text);
+    line-height:1.7;
+}
+
+.tech-btn{
+    display:inline-block;
+    margin-top:18px;
+    padding:10px 18px;
+    background:#2d6a4f;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.tech-btn:hover{
+    background:#1b4332;
+    color:#fff;
+}
+
+@media(max-width:768px){
+    .tech-hero-content h1{
+        font-size:2.1rem;
+    }
+
+    .tech-hero{
+        height:360px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="tech-hero">
+    <div class="tech-hero-content">
+        <h1>Technologies Used in Modern Farming</h1>
+        <p>
+            Discover how smart agriculture technologies are transforming farming through automation,
+            artificial intelligence, precision tools, smart irrigation, biotechnology, and advanced farm management systems.
+        </p>
+    </div>
+</section>
+
+<div class="tech-wrapper">
+
+    <div class="tech-section-title">
+        <h2>Smart Agriculture Innovations</h2>
+        <p>
+            Modern agriculture combines science, engineering, and digital technology to improve crop yield,
+            reduce waste, save water, and help farmers make better decisions.
+        </p>
+    </div>
+
+    <div class="tech-grid">
+
+            {% for tech in technologies %}
+            <div class="tech-card">
+
+                <img src="{{ tech.image.url }}"
+                     alt="{{ tech.title }}">
+
+                <div class="tech-card-body">
+
+                    <h3>{{ forloop.counter }}. {{ tech.title }}</h3>
+
+                    <ul class="tech-list">
+                        <li>
+                            <span>•</span>
+                            {{ tech.feature_1 }}
+                        </li>
+
+                        <li>
+                            <span>•</span>
+                            {{ tech.feature_2 }}
+                        </li>
+
+                        <li>
+                            <span>•</span>
+                            {{ tech.feature_3 }}
+                        </li>
+                    </ul>
+
+                    <a href="{% url 'technology_detail' tech.slug %}"
+                       class="tech-btn">
+                        Learn More →
+                    </a>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+    </div>
+
+    <div class="tech-highlight">
+        <h2>Benefits of Agricultural Technology</h2>
+
+        <div class="highlight-grid">
+
+            <div class="highlight-box">
+                <h4>Higher Productivity</h4>
+                <p>
+                    Smart farming tools increase crop yield and improve farm efficiency.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Reduced Waste</h4>
+                <p>
+                    Precision agriculture minimizes water, fertilizer, and pesticide waste.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Better Decision Making</h4>
+                <p>
+                    Real-time farm data helps farmers make accurate planting and harvesting decisions.
+                </p>
+            </div>
+
+            <div class="highlight-box">
+                <h4>Sustainable Farming</h4>
+                <p>
+                    Modern technologies help conserve natural resources and protect the environment.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

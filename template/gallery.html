@@ -1,0 +1,7 @@
+<img src="{{ crop.image.url }}" width="400">
+
+<h3>Gallery</h3>
+
+{% for img in crop.gallery.all %}
+    <img src="{{ img.image.url }}" width="200">
+{% endfor %}

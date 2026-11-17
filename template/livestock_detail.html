@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ animal.name }} — AgriLearn{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --green-primary: #0F6E56;
+        --green-light: #e8f5f0;
+        --amber-light: #fffbeb;
+        --blue-light: #eff6ff;
+        --red-light: #fef2f2;
+        --purple-light: #f5f3ff;
+        --text-dark: #1a2e1f;
+        --text-mid: #4b6358;
+        --text-muted: #7a9488;
+        --border: #d1e8df;
+        --bg: #f0faf5;
+        --white: #ffffff;
+        --radius: 14px;
+        --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-dark); }
+    .animal-page { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    .back-link {
+        display: inline-flex; align-items: center; gap: 6px;
+        color: var(--text-mid); text-decoration: none;
+        font-size: 14px; font-weight: 500; margin-bottom: 28px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--green-primary); }
+    .back-link svg { width: 16px; height: 16px; }
+
+    .animal-hero {
+        display: grid; grid-template-columns: 1fr 420px;
+        gap: 48px; align-items: start; margin-bottom: 40px;
+    }
+    .animal-hero-info { padding-top: 4px; }
+
+    .category-badge {
+        display: inline-block; background: #dcfce7; color: var(--green-primary);
+        font-size: 12px; font-weight: 600; padding: 4px 12px;
+        border-radius: 20px; margin-bottom: 14px; letter-spacing: 0.02em;
+    }
+
+    .animal-name {
+        font-family: 'Merriweather', serif; font-size: 40px;
+        font-weight: 700; color: var(--text-dark); line-height: 1.15; margin-bottom: 18px;
+    }
+
+    .animal-intro {
+        font-size: 15px; color: var(--text-mid); line-height: 1.75;
+        max-width: 460px; margin-bottom: 28px;
+    }
+
+    .animal-quickstats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .stat-card {
+        background: var(--white); border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm); padding: 16px 18px;
+        display: flex; align-items: flex-start; gap: 12px;
+    }
+    .stat-card.amber  { background: var(--amber-light);  border-color: #fde68a; }
+    .stat-card.blue   { background: var(--blue-light);   border-color: #bfdbfe; }
+    .stat-card.red    { background: var(--red-light);    border-color: #fecaca; }
+    .stat-card.purple { background: var(--purple-light); border-color: #ddd6fe; }
+    .stat-icon { font-size: 20px; flex-shrink: 0; line-height: 1; }
+    .stat-card-label { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+    .stat-card-value  { font-size: 12.5px; color: var(--text-mid); line-height: 1.5; }
+
+    .animal-hero-image { position: relative; }
+    .animal-main-image {
+        width: 100%; height: 430px; margin-top: 20px;
+        object-fit: cover; border-radius: var(--radius); display: block;
+        box-shadow: 0 8px 32px rgba(15,110,86,0.12);
+    }
+
+    .animal-gallery-strip {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(80px,1fr));
+        gap: 8px; margin-top: 10px;
+    }
+    .animal-gallery-strip img {
+        width: 100%; height: 70px; object-fit: cover; border-radius: 8px;
+        cursor: pointer; border: 2px solid transparent; transition: border-color 0.2s, opacity 0.2s;
+    }
+    .animal-gallery-strip img:hover,
+    .animal-gallery-strip img.active { border-color: var(--green-primary); opacity: 1; }
+    .animal-gallery-strip img:not(.active) { opacity: 0.75; }
+
+    .tab-nav {
+        display: flex; background: var(--white); border: 1.5px solid var(--border);
+        border-radius: 50px; padding: 5px; margin-bottom: 28px;
+        overflow-x: auto; scrollbar-width: none; gap: 4px;
+    }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .tab-btn {
+        flex: 1; min-width: 120px; padding: 10px 20px; border: none;
+        background: transparent; border-radius: 50px; font-size: 14px; font-weight: 500;
+        color: var(--text-muted); cursor: pointer; transition: background 0.2s, color 0.2s;
+        white-space: nowrap; font-family: 'DM Sans', sans-serif; text-align: center;
+    }
+    .tab-btn:hover { color: var(--green-primary); }
+    .tab-btn.active { background: var(--green-primary); color: var(--white); font-weight: 600; }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .content-card {
+        background: var(--white); border: 1.5px solid var(--border);
+        border-radius: var(--radius); padding: 36px 40px; margin-bottom: 20px;
+    }
+    .content-card h3 {
+        font-family: 'Merriweather', serif; font-size: 20px; font-weight: 700;
+        color: var(--text-dark); margin-bottom: 24px; padding-bottom: 14px;
+        border-bottom: 2px solid var(--green-light);
+    }
+
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .info-box { background: var(--green-light); border-radius: var(--radius-sm); padding: 20px; }
+    .info-box-icon { font-size: 24px; margin-bottom: 10px; display: block; }
+    .info-box h4 {
+        font-size: 13px; font-weight: 600; color: var(--green-primary);
+        text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .info-box-content { font-size: 13.5px; color: var(--text-mid); line-height: 1.7; }
+
+    .health-card {
+        background: #fff7ed; border: 1.5px solid #fed7aa;
+        border-radius: var(--radius); padding: 28px 32px; margin-bottom: 20px;
+    }
+    .health-card h3 {
+        font-family: 'Merriweather', serif; font-size: 20px; font-weight: 700;
+        color: #9a3412; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 2px solid #fed7aa;
+    }
+
+    .rich-content { font-size: 14.5px; color: var(--text-mid); line-height: 1.8; }
+    .rich-content p  { margin-bottom: 12px; }
+    .rich-content ul, .rich-content ol { padding-left: 20px; margin-bottom: 12px; }
+    .rich-content li { margin-bottom: 6px; }
+    .rich-content strong { color: var(--text-dark); font-weight: 600; }
+
+    @media (max-width: 860px) {
+        .animal-hero { grid-template-columns: 1fr; gap: 28px; }
+        .animal-hero-image { order: -1; }
+        .animal-main-image { height: 260px; margin-top: 0; }
+        .animal-name { font-size: 30px; }
+        .info-grid { grid-template-columns: 1fr; }
+        .content-card { padding: 24px 20px; }
+        .health-card { padding: 22px 18px; }
+    }
+    @media (max-width: 560px) {
+        .animal-page { padding: 20px 16px 60px; }
+        .animal-quickstats { grid-template-columns: 1fr; }
+        .tab-btn { min-width: 100px; font-size: 13px; padding: 9px 14px; }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="animal-page">
+
+    <a href="{% url 'home' %}" class="back-link">
+        <svg viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Home
+    </a>
+
+    <!-- HERO -->
+    <div class="animal-hero">
+
+        <div class="animal-hero-info">
+            <span class="category-badge">{{ animal.category.name }}</span>
+            <h1 class="animal-name">{{ animal.name }}</h1>
+
+            {% if animal.description %}
+            <p class="animal-intro">{{ animal.description|striptags|truncatewords:35 }}</p>
+            {% endif %}
+
+            <div class="animal-quickstats">
+                {% if animal.breed_types %}
+                <div class="stat-card blue">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Breed Types</div>
+                        <div class="stat-card-value">{{ animal.breed_types|safe|truncatewords:20 }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if animal.feeding %}
+                <div class="stat-card amber">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Feeding</div>
+                        <div class="stat-card-value">{{ animal.feeding|safe|truncatewords:20 }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if animal.breeding %}
+                <div class="stat-card purple">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Breeding</div>
+                        <div class="stat-card-value">{{ animal.breeding|safe|truncatewords:20 }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if animal.housing %}
+                <div class="stat-card red">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Housing</div>
+                        <div class="stat-card-value">{{ animal.housing|safe|truncatewords:20 }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="animal-hero-image">
+            <img src="{{ animal.image.url }}" alt="{{ animal.name }}"
+                 class="animal-main-image" id="mainImage">
+
+            {% if animal.gallery.all %}
+            <div class="animal-gallery-strip">
+                <img src="{{ animal.image.url }}" alt="main" class="active"
+                     onclick="switchImage(this, '{{ animal.image.url }}')">
+                {% for img in animal.gallery.all %}
+                <img src="{{ img.image.url }}" alt="{{ animal.name }} {{ forloop.counter }}"
+                     onclick="switchImage(this, '{{ img.image.url }}')">
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-nav" role="tablist">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-overview')">Overview</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-housing')">Housing & Feeding</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-breeding')">Breeding</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-products')">Products</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-benefits')">Benefits</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-health')">Health</button>
+    </div>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div class="tab-panel active" id="tab-overview">
+        {% if animal.breed_types %}
+        <div class="content-card">
+            <h3> Breed Types</h3>
+            <div class="rich-content">{{ animal.breed_types|safe }}</div>
+        </div>
+        {% endif %}
+
+        {% if animal.description %}
+        <div class="content-card">
+            <h3> About {{ animal.name }}</h3>
+            <div class="rich-content">{{ animal.description|safe }}</div>
+        </div>
+        {% endif %}
+
+        {% if not animal.breed_types and not animal.description %}
+        <div class="content-card">
+            <p style="color:var(--text-muted);font-size:14px;">No overview available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- TAB 2: HOUSING & FEEDING -->
+    <div class="tab-panel" id="tab-housing">
+        <div class="content-card">
+            <h3> Housing & Feeding Requirements</h3>
+            <div class="info-grid">
+                {% if animal.housing %}
+                <div class="info-box">
+                    <span class="info-box-icon"></span>
+                    <h4>Housing</h4>
+                    <div class="info-box-content rich-content">{{ animal.housing|safe }}</div>
+                </div>
+                {% endif %}
+
+                {% if animal.feeding %}
+                <div class="info-box">
+                    <span class="info-box-icon"></span>
+                    <h4>Feeding</h4>
+                    <div class="info-box-content rich-content">{{ animal.feeding|safe }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: BREEDING -->
+    <div class="tab-panel" id="tab-breeding">
+        <div class="content-card">
+            <h3> Breeding Information</h3>
+            {% if animal.breeding %}
+                <div class="rich-content">{{ animal.breeding|safe }}</div>
+            {% else %}
+                <p style="color:var(--text-muted);font-size:14px;">No breeding information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TAB 4: PRODUCTS -->
+    <div class="tab-panel" id="tab-products">
+        <div class="content-card">
+            <h3> Products from {{ animal.name }}</h3>
+            {% if animal.products %}
+                <div class="rich-content">{{ animal.products|safe }}</div>
+            {% else %}
+                <p style="color:var(--text-muted);font-size:14px;">No product information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TAB 5: BENEFITS -->
+    <div class="tab-panel" id="tab-benefits">
+        <div class="content-card">
+            <h3> Benefits of Keeping {{ animal.name }}</h3>
+            {% if animal.benefits %}
+                <div class="rich-content">{{ animal.benefits|safe }}</div>
+            {% else %}
+                <p style="color:var(--text-muted);font-size:14px;">No benefits information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- TAB 6: HEALTH -->
+    <div class="tab-panel" id="tab-health">
+        {% if animal.health_management %}
+        <div class="health-card">
+            <h3> Health Management</h3>
+            <div class="rich-content">{{ animal.health_management|safe }}</div>
+        </div>
+        {% else %}
+        <div class="content-card">
+            <p style="color:var(--text-muted);font-size:14px;">No health information available yet.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    function switchTab(btn, panelId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    function switchImage(thumb, url) {
+        document.getElementById('mainImage').src = url;
+        document.querySelectorAll('.animal-gallery-strip img').forEach(img => img.classList.remove('active'));
+        thumb.classList.add('active');
+    }
+</script>
+{% endblock %}

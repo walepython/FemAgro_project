@@ -1,0 +1,692 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ crop.name }} — FemAgro {% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'shop.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --green-primary: #0F6E56;
+        --green-light: #e8f5f0;
+        --green-mid: #2ECC71;
+        --amber: #f59e0b;
+        --amber-light: #fffbeb;
+        --blue-light: #eff6ff;
+        --blue: #3b82f6;
+        --text-dark: #1a2e1f;
+        --text-mid: #4b6358;
+        --text-muted: #7a9488;
+        --border: #d1e8df;
+        --bg: #f0faf5;
+        --white: #ffffff;
+        --radius: 14px;
+        --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text-dark);
+    }
+
+    /* ===== PAGE WRAPPER ===== */
+    .crop-page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 24px 80px;
+    }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-mid);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 28px;
+        transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--green-primary); }
+    .back-link svg { width: 16px; height: 16px; }
+
+    /* ===== HERO SECTION ===== */
+    .crop-hero {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 48px;
+        align-items: start;
+        margin-bottom: 40px;
+    }
+
+    .crop-hero-info { padding-top: 4px; }
+
+    /* Category badge */
+    .category-badge {
+        display: inline-block;
+        background: #dcfce7;
+        color: var(--green-primary);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 14px;
+        letter-spacing: 0.02em;
+    }
+
+    /* Crop name */
+    .crop-name {
+        font-family: 'Merriweather', serif;
+        font-size: 40px;
+        font-weight: 700;
+        color: var(--text-dark);
+        line-height: 1.15;
+        margin-bottom: 8px;
+    }
+
+    .crop-scientific {
+        font-family: 'Merriweather', serif;
+        font-style: italic;
+        font-size: 15px;
+        color: var(--text-muted);
+        margin-bottom: 18px;
+    }
+
+    .crop-intro {
+        font-size: 15px;
+        color: var(--text-mid);
+        line-height: 1.75;
+        max-width: 460px;
+        margin-bottom: 28px;
+    }
+
+    /* Quick stat cards */
+    .crop-quickstats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 16px 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .stat-card.amber {
+        background: var(--amber-light);
+        border-color: #fde68a;
+    }
+
+    .stat-card.blue {
+        background: var(--blue-light);
+        border-color: #bfdbfe;
+    }
+
+    .stat-icon {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .stat-card-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    .stat-card-value {
+        font-size: 12.5px;
+        color: var(--text-mid);
+        line-height: 1.5;
+    }
+
+    /* Hero image */
+    .crop-hero-image {
+        position: relative;
+    }
+
+    .crop-main-image {
+        width: 100%;
+        height: 430px;
+        margin-top: 20px;
+        object-fit: cover;
+        border-radius: var(--radius);
+        display: block;
+        box-shadow: 0 8px 32px rgba(15, 110, 86, 0.12);
+    }
+
+    /* Gallery strip */
+    .crop-gallery-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .crop-gallery-strip img {
+        width: 100%;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.2s, opacity 0.2s;
+    }
+
+    .crop-gallery-strip img:hover,
+    .crop-gallery-strip img.active {
+        border-color: var(--green-primary);
+        opacity: 1;
+    }
+
+    .crop-gallery-strip img:not(.active) {
+        opacity: 0.75;
+    }
+
+    /* ===== TAB NAVIGATION ===== */
+    .tab-nav {
+        display: flex;
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: 50px;
+        padding: 5px;
+        margin-bottom: 28px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        gap: 4px;
+    }
+
+    .tab-nav::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 10px 20px;
+        border: none;
+        background: transparent;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+        font-family: 'DM Sans', sans-serif;
+        text-align: center;
+    }
+
+    .tab-btn:hover { color: var(--green-primary); }
+
+    .tab-btn.active {
+        background: var(--green-primary);
+        color: var(--white);
+        font-weight: 600;
+    }
+
+    /* ===== TAB PANELS ===== */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ===== CONTENT CARD ===== */
+    .content-card {
+        background: var(--white);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius);
+        padding: 36px 40px;
+        margin-bottom: 20px;
+    }
+
+    .content-card h3 {
+        font-family: 'Merriweather', serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 24px;
+        padding-bottom: 14px;
+        border-bottom: 2px solid var(--green-light);
+    }
+
+    /* ===== STEP LIST (How to Plant) ===== */
+    .step-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .step-number {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        background: var(--green-primary);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+    }
+
+    .step-text {
+        font-size: 14.5px;
+        color: var(--text-mid);
+        line-height: 1.7;
+        padding-top: 4px;
+    }
+
+    /* ===== INFO GRID (Where to Plant) ===== */
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .info-box {
+        background: var(--green-light);
+        border-radius: var(--radius-sm);
+        padding: 20px;
+    }
+
+    .info-box-icon {
+        font-size: 24px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .info-box h4 {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--green-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+    }
+
+    .info-box p, .info-box-content {
+        font-size: 13.5px;
+        color: var(--text-mid);
+        line-height: 1.7;
+    }
+
+    /* ===== BENEFITS LIST ===== */
+    .benefit-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--green-light);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--green-primary);
+    }
+
+    .benefit-check {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        background: var(--green-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+    }
+
+    .benefit-check svg {
+        width: 11px;
+        height: 11px;
+    }
+
+    .benefit-text {
+        font-size: 14px;
+        color: var(--text-mid);
+        line-height: 1.6;
+    }
+
+    /* ===== RICH TEXT (CKEditor output) ===== */
+    .rich-content { font-size: 14.5px; color: var(--text-mid); line-height: 1.8; }
+    .rich-content p { margin-bottom: 12px; }
+    .rich-content ul, .rich-content ol { padding-left: 20px; margin-bottom: 12px; }
+    .rich-content li { margin-bottom: 6px; }
+    .rich-content strong { color: var(--text-dark); font-weight: 600; }
+
+    /* ===== FARMING TIPS ===== */
+    .tips-card {
+        background: #fffbeb;
+        border: 1.5px solid #fde68a;
+        border-radius: var(--radius);
+        padding: 28px 32px;
+    }
+    h1{>small{font-size: 20px;}}
+
+    .tips-card h3 {
+        border-bottom-color: #fde68a;
+        color: #92400e;
+    }
+
+    /* ===== SEASON BADGES ===== */
+    .season-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .season-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .season-badge.rainy {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .season-badge.dry {
+        background: #fef3c7;
+        color: #b45309;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 860px) {
+        .crop-hero { grid-template-columns: 1fr; gap: 28px; }
+        .crop-hero-image { order: -1; }
+        .crop-main-image { height: 240px; }
+        .crop-name { font-size: 30px; }
+        .info-grid { grid-template-columns: 1fr; }
+        .content-card { padding: 24px 20px; }
+    }
+
+    @media (max-width: 560px) {
+        .crop-page { padding: 20px 16px 60px; }
+        .crop-quickstats { grid-template-columns: 1fr; }
+        .tab-btn { min-width: 100px; font-size: 13px; padding: 9px 14px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="crop-page">
+
+    <!-- BACK LINK -->
+    <a href="{% url 'home' %}" class="back-link">
+        <svg viewBox="0 0 16 16" fill="none">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Home
+    </a>
+
+    <!-- ===== HERO ===== -->
+    <div class="crop-hero">
+
+        <!-- Left: Info -->
+        <div class="crop-hero-info">
+            <span class="category-badge">{{ crop.category }}</span>
+            <h1 class="crop-name">{{ crop.name }}    <small>{{crop.botanical_name}}</small></h1>
+
+            {% if crop.description %}
+            <p class="crop-intro">{{ crop.description|striptags|truncatewords:40|safe }}</p>
+            {% endif %}
+
+            <!-- Quick Stats -->
+            <div class="crop-quickstats">
+                {% if crop.germination_time %}
+                <div class="stat-card blue">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Growing Time</div>
+                        <div class="stat-card-value">{{ crop.germination_time|striptags|truncatewords:20|safe }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if crop.harvest_method %}
+                <div class="stat-card amber">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Harvest</div>
+                        <div class="stat-card-value">{{ crop.harvest_method|striptags|truncatewords:60|safe }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if crop.water_requirement %}
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Water Need</div>
+                        <div class="stat-card-value">{{ crop.water_requirement|striptags|truncatewords:40|safe }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if crop.soil_type %}
+                <div class="stat-card">
+                    <div class="stat-icon"></div>
+                    <div>
+                        <div class="stat-card-label">Soil Type</div>
+                        <div class="stat-card-value">{{ crop.soil_type|striptags|truncatewords:40|safe }}</div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right: Images -->
+        <div class="crop-hero-image">
+            <!-- Main image -->
+            <img
+                src="{{ crop.image.url }}"
+                alt="{{ crop.name }}"
+                class="crop-main-image"
+                id="mainImage"
+            >
+
+            <!-- Gallery thumbnails -->
+            {% if crop.gallery.all %}
+            <div class="crop-gallery-strip">
+                <img
+                    src="{{ crop.image.url }}"
+                    alt="{{ crop.name }} main"
+                    class="active"
+                    onclick="switchImage(this, '{{ crop.image.url }}')"
+                >
+                {% for img in crop.gallery.all %}
+                <img
+                    src="{{ img.image.url }}"
+                    alt="{{ crop.name }} {{ forloop.counter }}"
+                    onclick="switchImage(this, '{{ img.image.url }}')"
+                >
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ===== TAB NAVIGATION ===== -->
+    <div class="tab-nav" role="tablist">
+        <button class="tab-btn active" onclick="switchTab(this, 'tab-plant')" role="tab">
+             How to Plant
+        </button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-where')" role="tab">
+             Where to Plant
+        </button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-benefits')" role="tab">
+             Benefits
+        </button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-tips')" role="tab">
+             Farming Tips
+        </button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-more')" role="tab">
+             More Info
+        </button>
+    </div>
+
+    <!-- ===== TAB: HOW TO PLANT ===== -->
+    <div class="tab-panel active" id="tab-plant">
+        <div class="content-card">
+            <h3>Step-by-Step Planting Guide</h3>
+            {% if crop.planting_method %}
+                <div class="rich-content">
+                    {{ crop.planting_method|safe }}
+                </div>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 14px;">No planting information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ===== TAB: WHERE TO PLANT ===== -->
+    <div class="tab-panel" id="tab-where">
+        <div class="content-card">
+            <h3>Where to Plant</h3>
+            <div class="info-grid">
+
+                {% if crop.season %}
+                <div class="info-box">
+                    <span class="info-box-icon"></span>
+                    <h4>Season</h4>
+                    <div class="info-box-content rich-content">{{ crop.season|safe }}</div>
+                </div>
+                {% endif %}
+
+                {% if crop.soil_type %}
+                <div class="info-box">
+                    <span class="info-box-icon"></span>
+                    <h4>Soil Type</h4>
+                    <div class="info-box-content rich-content">{{ crop.soil_type|safe }}</div>
+                </div>
+                {% endif %}
+
+                {% if crop.water_requirement %}
+                <div class="info-box">
+                    <span class="info-box-icon"></span>
+                    <h4>Water Requirement</h4>
+                    <div class="info-box-content rich-content">{{ crop.water_requirement|safe }}</div>
+                </div>
+                {% endif %}
+
+                {% if crop.germination_time %}
+                <div class="info-box">
+                    <!-- have deleted the i cons -->
+                    <span class="info-box-icon"></span>
+                    <h4>Germination Time</h4>
+                    <div class="info-box-content rich-content">{{ crop.germination_time|safe }}</div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB: BENEFITS ===== -->
+    <div class="tab-panel" id="tab-benefits">
+        <div class="content-card">
+            <h3>Benefits of {{ crop.name }}</h3>
+            {% if crop.benefit %}
+                <div class="rich-content">{{ crop.benefit|safe }}</div>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 14px;">No benefits information available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ===== TAB: FARMING TIPS ===== -->
+    <div class="tab-panel" id="tab-tips">
+        <div class="tips-card">
+            <h3> Farming Tips & Tricks</h3>
+            {% if crop.farming_tips %}
+                <div class="rich-content">{{ crop.farming_tips|safe }}</div>
+            {% else %}
+                <p style="color: var(--text-muted); font-size: 14px;">No farming tips available yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ===== TAB: MORE INFO ===== -->
+    <div class="tab-panel" id="tab-more">
+
+        {% if crop.harvest_method %}
+        <div class="content-card">
+            <h3> Harvest Method</h3>
+            <div class="rich-content">{{ crop.harvest_method|safe }}</div>
+        </div>
+        {% endif %}
+
+        {% if crop.maturity_time %}
+        <div class="content-card">
+            <h3> Maturity Time</h3>
+            <div class="rich-content">{{ crop.maturity_time|safe }}</div>
+        </div>
+        {% endif %}
+
+        {% if crop.description %}
+        <div class="content-card">
+            <h3> Full Description</h3>
+            <div class="rich-content">{{ crop.description|safe }}</div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    // ===== TAB SWITCHING =====
+    function switchTab(btn, panelId) {
+        // Deactivate all tabs and panels
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+        // Activate clicked tab and panel
+        btn.classList.add('active');
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    // ===== GALLERY IMAGE SWITCH =====
+    function switchImage(thumb, url) {
+        document.getElementById('mainImage').src = url;
+        document.querySelectorAll('.crop-gallery-strip img').forEach(img => {
+            img.classList.remove('active');
+        });
+        thumb.classList.add('active');
+    }
+</script>
+{% endblock %}

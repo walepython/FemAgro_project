@@ -1,0 +1,20 @@
+<h2>Find Crops for Your Soil</h2>
+
+<form method="GET">
+
+<select name="soil">
+<option value="loamy">Loamy Soil</option>
+<option value="sandy">Sandy Soil</option>
+<option value="clay">Clay Soil</option>
+</select>
+
+<button type="submit">Recommend</button>
+
+</form>
+
+{% for crop in crops %}
+
+<h3>{{ crop.name }}</h3>
+<p>{{ crop.season }}</p>
+
+{% endfor %}
